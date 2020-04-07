@@ -16,7 +16,7 @@ build-master:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - source scripts/build.sh $AWS_ECR_ACCOUNT_URL/videowiki/api-gateway-service
+    - source scripts/build.sh $AWS_ECR_ACCOUNT_URL/videowiki/api_gateway_service
   only:
     - master
 

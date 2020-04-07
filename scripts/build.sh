@@ -6,6 +6,9 @@ if ["$1" = ""]; then
 else
         echo "Building image..."
         docker build \
+                --build-arg FRONTEND_HOST_NAME=${FRONTEND_HOST_NAME} \
+                --build-arg FRONTEND_HOST_PROTOCOL=${FRONTEND_HOST_PROTOCOL} \
+                --build-arg SECRET_STRING=${SECRET_STRING} \
                 -f Dockerfile \
                 -t $TARGET_REPO:${CI_COMMIT_REF_NAME} \
                 -t $TARGET_REPO:master \

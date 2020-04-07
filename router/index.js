@@ -175,7 +175,3 @@ function createRouter() {
 function createProxy(TARGET) {
   return require('express-http-proxy')(TARGET, { limit: '500mb' });
 }
-
-setTimeout(() => {
-  console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS)
-}, 5000);

@@ -1,17 +1,8 @@
 FROM node:10.15.0-jessie
 WORKDIR /api_gateway_service
 
-# SET PATH FOR gsc_creds.json
-
 COPY . .
-
 RUN npm install
-
-ENV GOOGLE_APPLICATION_CREDENTIALS=/backend/gsc_creds.json
-
-# ADD AWS CREDENTIALS FILE
-RUN mkdir ~/.aws
-RUN echo ${AWS_KEYS_FILE_BASE64} | base64 --decode > ~/.aws/credentials
 
 EXPOSE 4000
 CMD [ "npm", "run", "docker:dev"]
