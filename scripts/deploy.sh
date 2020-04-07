@@ -1,7 +1,7 @@
 # export AWS_CLUSTER_NAME=$1
 # export AWS_SERVICE_NAME=$2
 # export AWS_REPO_NAME=$3
-# export TARGET_REPO=$AWS_ECR_ACCOUNT_URL/$AWS_REPO_NAME:${CI_COMMIT_REF_NAME}
+# export TARGET_REPO=$AWS_ECR_ACCOUNT_URL/$AWS_REPO_NAME:${CI_COMMIT_SHA}
 
 # if ["$1" = ""] || ["$2" = ""] || ["$3" = ""]; then
 #     echo "Usage: source deploy.sh cluster-name service-name ecs-repo-name"
@@ -35,9 +35,9 @@
 #     $LOGIN_COMMAND
 
 #     # # Pull image from gitlab registry
-#     # docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+#     # docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
-#     # docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $TARGET_REPO
+#     # docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $TARGET_REPO
 
 #     # Push docker image to ECS REGISTRY
 #     # docker push $TARGET_REPO

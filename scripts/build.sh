@@ -10,7 +10,7 @@ else
                 --build-arg FRONTEND_HOST_PROTOCOL=${FRONTEND_HOST_PROTOCOL} \
                 --build-arg SECRET_STRING=${SECRET_STRING} \
                 -f Dockerfile \
-                -t $TARGET_REPO:${CI_COMMIT_REF_NAME} \
+                -t $TARGET_REPO:${CI_COMMIT_SHA} \
                 -t $TARGET_REPO:master \
                 .
 
@@ -38,7 +38,7 @@ else
 
         # save it to an env var & use that env var to login
         $LOGIN_COMMAND
-        docker push $TARGET_REPO:${CI_COMMIT_REF_NAME}
+        docker push $TARGET_REPO:${CI_COMMIT_SHA}
         docker push $TARGET_REPO:master
 fi
 #         -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME \
