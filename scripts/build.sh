@@ -1,6 +1,6 @@
 export TARGET_REPO=$1
 
-if ["$1" = ""] || ["$2" = ""] || ["$3" = ""]; then
+if ["$1" = ""]; then
         echo "Usage: source build.sh cluster-name service-name ecs-repo-name"
         exit 1
 else
