@@ -38,7 +38,9 @@ else
 
         # save it to an env var & use that env var to login
         $LOGIN_COMMAND
+        echo "Pushing to " + $TARGET_REPO:${CI_COMMIT_SHA}
         docker push $TARGET_REPO:${CI_COMMIT_SHA}
+        echo "Pushing to " + $TARGET_REPO:master
         docker push $TARGET_REPO:master
 fi
 #         -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME \
