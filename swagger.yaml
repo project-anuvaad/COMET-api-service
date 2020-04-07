@@ -1,0 +1,2572 @@
+openapi: 3.0.0
+info:
+  description: |
+    This is the documentation for Videowiki's API server
+  version: "1.0.0"
+  title: VideoWiki
+  termsOfService: 'https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/TVW+-+Terms+of+Service.pdf'
+  contact:
+    email: pratik.shetty@tlrfindia.com
+  license:
+    name: MIT License
+    url: 'https://github.com/angular/angular.js/blob/master/LICENSE'
+servers:
+  - description: Production Api server
+    url: https://api.videowiki.org/api
+  
+paths:
+  /auth/register:
+    post:
+      tags: 
+        - auth
+      description: Register a new user
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                email:
+                  type: string
+                  description: Email Address
+                  example: myemail@exampe.com
+                firstname:
+                  type: string
+                  description: First name
+                  example: John
+                lastname:
+                  type: string
+                  description: Last name
+                  example: Doe
+                password:
+                  type: string
+                  description: Password
+                  minLength: 9
+                  example: mypasswor1234
+                orgName:
+                  type: string
+                  description: The name of your default created organization
+                  example: My Organization
+                logo:
+                  type: object
+                  description: Optional logo for the organization
+                  example: LOGO FILE
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates success of transaction
+                    example: true
+                    
+        400:
+          description: Some error occurred
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          
+  /auth/login:
+    post:
+      tags: 
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  description: Email to be logged in as
+                  example: myemail@example.com
+                password:
+                  description: Your password
+                  example: mypassword1234
+      responses:
+        200:
+          description: Success Response. IMPORTANT NOTE use the token returned from this response in all API calls in the header of the requests, header field is 'x-access-token'
+          content:
+            application/json:
+              schema:
+                properties:
+                  token:
+                    type: string
+                    description: An authorization token to be used on authorized api calls
+                    example: kjasdn3kjej1hnmsda123klkjsad
+                  user:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: error response
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+                  
+  /auth/resetPassword:
+    post:
+      tags: 
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  description: The email for which the password to be reset
+                  type: string
+                  example: myemail@example.com
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: Success status
+                    type: boolean
+                    example: true
+        400:
+          description: Error Response
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+  /auth/refreshToken:
+    post:
+      tags: 
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                token:
+                  description: The token to be refreshed ( must be current valid )
+                  type: string
+                  example: asda21hkj21hjgjh2131
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  token:
+                    description: The refreshed token
+                    type: string
+                    example: asdjh2k31hkjalhdjk2123dad
+                  user:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Error response
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /video:
+    get:
+      tags: 
+        - video
+      parameters: 
+        - in: query
+          name: organization
+          description: the ID of the organization of the videos required
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: page
+          description: the page to be fetched
+          schema:
+            type: number
+            minimum: 1
+            example: 1
+          required: true
+        - in: query
+          name: search
+          description: an optional search term
+          schema:
+            type: string
+            example: My search term
+        - in: query
+          name: status
+          description: a comma-separated list of statuses for the videos
+          schema:
+            type: string
+            example: proofread,converting
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  videos:
+                    description: an array of videos matchings the query
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Video'
+                  pagesCount:
+                    description: number of pages of videos matching the query
+                    type: number
+                    example: 10
+              
+  /video/count:
+    get:
+      tags: 
+        - video
+      summary: get the number of videos that are pending to be transcribed/proofread and completed
+      parameters: 
+        - in: query
+          name: organization
+          schema:
+            type: string
+          description: The ID of organization
+          required: true
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  transcribe:
+                    description: The number of videos pending to be trancribed
+                    type: number
+                    example: 12
+                  proofread:
+                    description: the number of videos pending to be proofread
+                    type: number
+                    example: 8
+                  completed:
+                    description: number of videos that are completed and ready to be translated
+                    type: number
+                    example: 55
+  /video/{id}:
+    get:
+      tags: 
+        - video
+      summary: Get a video by id
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+    patch:
+      tags: 
+        - video
+      summary: Update a video
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: request body fields are optional, only set the fields that are to be updated. 'IMPORTANT:' updating the langCode field will result the video to get back to the 'uploaded' status and all translations to be archived
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                title:
+                  description: the Title of the video
+                  type: string
+                  example: My new video
+                langCode:
+                  description: the language code of the video
+                  type: string
+                  example: en-US
+                numberOfSpeakers:
+                  description: The number of speakers in the video
+                  type: number
+                  example: 2
+                  minimum: 1
+                  maximum: 10
+                video:
+                  description: The video file to be uploaded
+                  type: string
+                  format: binary
+                subtitle:
+                  description: an optional subtitle file to be uploaded along with the video
+                  type: string
+                  format: binary
+                backgroundMusic:
+                  description: an optional background music file to be uploaded along with the file
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  video:
+                    description: The updated video document
+                    allOf:
+                      - $ref: '#/components/schemas/Video'
+    delete:
+      tags: 
+        - video
+      summary: Delete a video
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: A success flag
+                    type: boolean
+                    example: true
+    
+  /video/upload:
+    post:
+      tags: 
+        - video
+      summary: Upload a new video
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                organization:
+                  description: The organization ID for the video to be uploaded in
+                  type: string
+                
+                title:
+                  description: the Title of the video
+                  type: string
+                  example: My new video
+                langCode:
+                  description: the language code of the video
+                  type: string
+                  example: en-US
+                numberOfSpeakers:
+                  description: The number of speakers in the video
+                  type: number
+                  example: 2
+                  minimum: 1
+                  maximum: 10
+                video:
+                  description: The video file to be uploaded
+                  type: string
+                  format: binary
+                subtitle:
+                  description: an optional subtitle file to be uploaded along with the video
+                  type: string
+                  format: binary
+                backgroundMusic:
+                  description: an optional background music file to be uploaded along with the file
+                  type: string
+                  format: binary
+                
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Video'
+  /video/{id}/backgroundMusic:
+    patch:
+      tags: 
+        - video
+      summary: Update/Upload background music file of the video
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  description: the background music file
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  video:
+                    $ref: '#/components/schemas/Video'
+          
+    delete:
+      tags: 
+        - video
+      summary: Delete background music file
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  video:
+                    $ref: '#/components/schemas/Video'
+  /video/{id}/backgroundMusic/extract:
+    post:
+      tags: 
+        - video
+      summary: Automatically extract background music from the video
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  video:
+                    $ref: '#/components/schemas/Video'
+  /video/{id}/transcribe:
+    post:
+      tags: 
+        - video
+      summary: Start transcribing the video, or re-review the already transcribed video ( re-review request will result in old translations to be archived )
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                   description: a success flag
+                   type: boolean
+                   example: true
+                  queued:
+                    description: a flag that indicates the transcription got queued
+                    type: boolean
+                    example: true
+                  article:
+                    description: the article that's ready to be proofreaded, this field is only available in 2 cases, if the video has been transcribed before and this transcribe request is a re-review request, or when the video language is not supported to be transcribed and the video have to be manually transcribed
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+  /video/{id}/transcribe/skip:
+    post:
+      tags: 
+        - video
+      summary: Skip automatic transcription of this video and let users manually transcribe it
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: Success flag
+                    type: boolean
+                    example: true
+                  article:
+                    description: the generated article to be modified/edited
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+                  
+  /video/all/transcribe:
+    post:
+      tags: 
+        - video
+      summary: Transcribe all uploaded videos that are pending to be transcribed
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: a success flag
+                    type: boolean
+                    example: true
+                  queued:
+                    description: a flag that indicates the transcriptions got queued
+                    type: boolean
+                    example: true
+  /video/{id}/convert:
+    post:
+      tags: 
+        - video
+      summary: Make a proofread video ready to be translated, this route should be called after finishing proofreading in order to cut the video into small videos slides based on the user proofread
+      parameters: 
+        - in: path
+          name: id
+          description: Video id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                articleId:
+                  description: the ID of the article used to proofread the video
+                  type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  queued:
+                    description: a flag that indicates that the convert process is queued to be done
+                    type: boolean
+                    example: true
+          
+  /video/{id}/reviewers:
+    put:
+      tags: 
+        - video
+      summary: Change the users who can review the transcription ( must include a full list of users to be assigned )
+      parameters: 
+      - in: path
+        name: id
+        description: Video id
+        required: true 
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                reviewers:
+                  description: an array containing IDS of users to be assigned as reviewers
+                  type: array
+                  items:
+                    description: ID of a user
+                    type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  reviewers:
+                    description: an array containing IDS of users that are assigned as reviewers
+                    type: array
+                    items:
+                      description: ID of a user
+                      type: string
+                      
+  # ARTICLE ROUTES
+  /article/{id}:
+    get:
+      tags:
+        - article
+      summary: Get article by it's id
+      parameters: 
+      - in: path
+        name: id
+        description: Article id
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  article:
+                    $ref: '#/components/schemas/Article'
+    delete:
+      tags:
+        - article
+      summary: delete article by it's id
+      parameters: 
+      - in: path
+        name: id
+        description: Article id
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: Success flag
+                    type: boolean
+                    example: true
+                    
+  /article/by_video_id:
+    get:
+      tags:
+        - article
+      summary: get the current main article that was generated from a video by the video id
+      parameters: 
+      - in: query
+        name: videoId
+        description: The ID of the video
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+  /article/translations:
+    get:
+      tags:
+        - article
+      summary: get article that are ready to be translated/being translated
+      parameters: 
+        - in: query
+          name: organization
+          description: The ID of organization to get the articles of
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: _id
+          description: Video id, use only to fetch article translation of a single video
+          schema:
+            type: string
+        - in: query
+          name: page
+          description: The page number
+          schema:
+            type: number
+            minimum: 1
+            example: 1
+          required: true
+        - in: query
+          name: search
+          description: an optional search field ( search in articles titles )
+          schema:
+            type: string
+        - in: query
+          name: archived
+          description: set to true to fetch archived articles, otherwise fetches active translations
+          schema:
+            type: boolean
+            default: false
+            example: false
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  videos:
+                    description: An array containing each video with it's translation articles
+                    type: array
+                    items:
+                      properties:
+                        video:
+                          $ref: '#/components/schemas/Video'
+                        articles:
+                          description: the translations articles ( article with articleType = 'translation' )
+                          type: array
+                          items:
+                            allOf:
+                              - $ref: '#/components/schemas/ArticleWithMetrics'
+                        originalArticle:
+                          description: the original article that the translations ( in articles array ) are based on
+                          allOf:
+                            - $ref: '#/components/schemas/Article'
+                  pagesCount:
+                    description: The number of pages availabe given the query
+                    type: number
+                    example: 10
+  /article/{id}/slides/{slidePosition}/content/{subslidePosition}:
+    post:
+      tags:
+        - article
+      summary: Add a new subslide
+      parameters: 
+        - in: path
+          name: id
+          description: Artice id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: slidePosition
+          description: the 'position' of the slide in which the new subslide should be added
+          required: true
+          schema:
+            type: number
+            minimum: 0
+        - in: path
+          name: subslidePosition
+          description: the 'position' of the new subslide to be added
+          required: true
+          schema:
+            type: number
+            minimum: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                text:
+                  description: the text content of the slide
+                  type: string
+                startTime:
+                  description: the start time of the new subslide in seconds
+                  type: number
+                  example: 15.2
+                endTime:
+                  description: the end time of the new subslide in seconds
+                  type: number
+                  example: 19.2
+                speakerProfile:
+                  description: the speaker profile of the new subslide
+                  allOf:
+                    - $ref: '#/components/schemas/SpeakerProfile'
+                
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  article:
+                    description: Article document with updated slides ( note that the positions of subslides in this specific slide might have been changed to accomodate for the added new subslide )
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+                  
+    patch:
+      tags:
+        - article
+      summary: Add a new subslide
+      parameters: 
+        - in: path
+          name: id
+          description: Artice id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: slidePosition
+          description: the 'position' of the slide in which the new subslide should be added
+          required: true
+          schema:
+            type: number
+            minimum: 0
+        - in: path
+          name: subslidePosition
+          description: the 'position' of the subslide to be updated
+          required: true
+          schema:
+            type: number
+            minimum: 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: Fields that can be updated for the subslide ( doesn't have to be all fields, minimum 1 )
+              properties:
+                text:
+                  description: the text content of the slide
+                  type: string
+                startTime:
+                  description: the start time of the new subslide in seconds
+                  type: number
+                  example: 15.2
+                endTime:
+                  description: the end time of the new subslide in seconds
+                  type: number
+                  example: 19.2
+                speakerProfile:
+                  description: the speaker profile of the new subslide
+                  allOf:
+                    - $ref: '#/components/schemas/SpeakerProfile'
+                
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  articleId:
+                    description: The id of the updated article
+                    type: string
+                  slidePosition:
+                    description: The position of the slide updated
+                    type: number
+                  subslidePosition:
+                    description: the position of the subslide updated
+                    type: number
+                  changes:
+                    description: an object containing the applied changes
+                    type: object
+    delete:
+      tags:
+        - article
+      summary: delete a subslide
+      parameters: 
+        - in: path
+          name: id
+          description: Artice id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: slidePosition
+          description: the 'position' of the slide in which the new subslide should be added
+          required: true
+          schema:
+            type: number
+            minimum: 0
+        - in: path
+          name: subslidePosition
+          description: the 'position' of the subslide to be updated
+          required: true
+          schema:
+            type: number
+            minimum: 0
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  article:
+                    description: the article document after a subslide was deleted
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+  /article/{id}/slides/{slidePosition}/content/{subslidePosition}/split:
+    post:
+      tags:
+        - article
+      summary: Split a subslide into two parts
+      parameters: 
+        - in: path
+          name: id
+          description: Artice id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: slidePosition
+          description: the 'position' of the slide in which the new subslide should be added
+          required: true
+          schema:
+            type: number
+            minimum: 0
+        - in: path
+          name: subslidePosition
+          description: the 'position' of the subslide to be updated
+          required: true
+          schema:
+            type: number
+            minimum: 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                wordIndex:
+                  description: The index of the word in the subslide text at which to split the subslide
+                  type: number
+                  example: 12
+                time:
+                  description: the time, in seconds, to assign as the endTime for the first new splitted subslide and the startTime for the second splitted subslide
+                  type: number
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  article:
+                    description: the article document after the subslide was splitted
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+  /article/{id}/text/replace:
+    post:
+      tags:
+        - article
+      summary: Find and Replace a text in the entire article slides
+      parameters: 
+      - in: path
+        name: id
+        description: Article id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                find:
+                  description: the text to be found/replaced
+                  type: string
+                replace:
+                  description: the text to be replaced with
+                  type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  article:
+                    description: The article document after it's slides getting text replaced
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+        
+  /article/{id}/speakersProfile:
+    put:
+      tags:
+        - article
+      summary: Update article's speakersProfile
+      parameters: 
+        - in: path
+          name: id
+          description: Article id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                speakersProfile:
+                  description: Array of speakers profile
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SpeakerProfile'
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  speakersProfile:
+                    description: Array of speakers profile
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SpeakerProfile'  
+                      
+  /article/{id}/toEnglish:
+    put:
+      tags:
+        - article
+      summary: update article's toEnglish field
+      parameters: 
+        - in: path
+          name: id
+          description: Article id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                toEnglish:
+                  description: new toEnglish field value
+                  type: boolean
+                  example: false
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  toEnglish:
+                    description: new toEnglish field value
+                    type: boolean
+                    example: false
+                    
+  /article/{id}/translators:
+    put:
+      tags:
+        - article
+      summary: Update article's translators ( who are assigned to translate an article of articleType = "translation" )
+      parameters: 
+        - in: path
+          name: id
+          description: Article id
+          required: true
+          schema:
+            type: string
+          
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                translators:
+                  description: an array of translators, each item is an object of speakerNumber and the assigned user's id
+                  type: array
+                  items:
+                    properties:
+                      user:
+                        description: the User's ID of the assigned user
+                        type: string
+                      speakerNumber:
+                        description: the speaker number to which the user is assiged
+                        type: number
+                        minimum: 0
+                    
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  translators:
+                    description: array of the assigned translators
+                    type: array
+                    items:
+                      properties:
+                        user:
+                          description: the User's ID of the assigned user
+                          type: string
+                        speakerNumber:
+                          description: the speaker number to which the user is assiged
+                          type: number
+                          minimum: 0
+  /article/{id}/translators/finishDate:
+    patch:
+      tags:
+        - article
+      summary: Update a translator's finish date
+      parameters: 
+        - in: path
+          name: id
+          description: Article id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                speakerNumber:
+                  description: the speaker number of the translator to be updated
+                  type: number
+                timestamp:
+                  description: the timestamp for the finishDate
+                  type: number
+                  example: 1578507543347
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  translators:
+                    description: array of the assigned translators
+                    type: array
+                    items:
+                      properties:
+                        user:
+                          description: the User's ID of the assigned user
+                          type: string
+                        speakerNumber:
+                          description: the speaker number to which the user is assiged
+                          type: number
+                          minimum: 0
+                          
+                          
+  # TRANSLATION ROUTES
+  /translate/{articleId}:
+    post:
+      tags:
+        - translate
+      summary: generate a new article translation from an original article
+      parameters: 
+        - in: path
+          name: articleId
+          description: the ID of the original article ( article of articleType = "original" ) from which a new translation is to be generated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                lang:
+                  description: The language ISO code of the new/target translation
+                  type: string
+                  example: hi
+                tts:
+                  description: Wether to use the TTS engine to control the translation's audios or not
+                  type: boolean
+                  default: false
+                langName:
+                  description: an optional field to assign a language name for languages that doesn't have an ISO code
+                  type: string  
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  article:
+                    description: The new generated translation article
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+                  originalArticle:
+                    description: the original article that was used as a base for the translation article
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+  /translate/{articleId}/languages:
+    get:
+      tags:
+        - translate
+      summary: get languages to which this article have been completly translate to ( those translations can be used as a base translation )
+      parameters: 
+      - in: path
+        name: articleId
+        description: the Article id of the article, must be of articleType = "translation"
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  languages:
+                    description: An array of languages that are completly translated from the same originalArticle
+                    type: array
+                    items:
+                      properties:
+                        langCode:
+                          description: the ISO language code of the language
+                          type: string
+                        tts:
+                          description: wether this language of the translation is controlled by the TTS engine or not
+                          type: boolean
+                        langName:
+                          description: the langName field of the translation article if it have any
+                          type: string
+                  originalLanguage:
+                    description: the language data of this artice ( the article for which the articleId in the route refers to )
+                    type: object
+                    properties:
+                      langCode:
+                          description: the ISO language code of the language
+                          type: string
+                      tts:
+                        description: wether this language of the translation is controlled by the TTS engine or not
+                        type: boolean
+                      langName:
+                        description: the langName field of the translation article if it have any
+                        type: string
+  /translate/{articleId}/text:
+    post:
+      tags:
+        - translate
+      summary: update an article translation's ( article of articleType = "translation" ) subslide text
+      parameters: 
+        - in: path
+          name: articleId
+          description: Article id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                slidePosition:
+                  description: the position of the slide in which the subslide exists
+                  type: number
+                  example: 0
+                subslidePosition:
+                  description: the position of the subslide
+                  type: number
+                  example: 0
+                text:
+                  description: the new text for the subslide
+                  type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    description: the new text of the subslide
+                    type: string
+                  slidePosition:
+                    description: the position of the slide in which the subslide exists
+                    type: number
+                    example: 0
+                  subslidePosition:
+                    description: the position of the subslide
+                    type: number
+                    example: 0
+                  audioSynced:
+                    description: a boolean flag that the audio wasnt updated after the text is updated yet
+                    type: boolean
+                    example: false
+                    
+  /translate/{articleId}/text/replace:
+    post:
+      tags:
+        - translate
+      summary: Find and Replace a text in the entire article slides
+      parameters: 
+      - in: path
+        name: articleId
+        description: Article id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                find:
+                  description: the text to be found/replaced
+                  type: string
+                replace:
+                  description: the text to be replaced with
+                  type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  article:
+                    description: The article document after it's slides getting text replaced
+                    allOf:
+                      - $ref: '#/components/schemas/Article'
+                      
+  /translate/{articleId}/audio:
+    post:
+      tags:
+        - translate
+      summary: Upload the audio translation of a subslide
+      parameters: 
+      - in: path
+        name: articleId
+        description: Article id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                slidePosition:
+                  description: the position of the slide in which the subslide exists
+                  type: number
+                  example: 0
+                subslidePosition:
+                  description: the position of the subslide
+                  type: number
+                  example: 0
+                file:
+                  description: the new audio for the subslide
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  audio:
+                    description: the URL of the uploaded audio of the subslide
+                    type: string
+                  slidePosition:
+                    description: the position of the slide in which the subslide exists
+                    type: number
+                    example: 0
+                  subslidePosition:
+                    description: the position of the subslide
+                    type: number
+                    example: 0
+                  audioSynced:
+                    description: a boolean flag that the audio wasnt updated after the text is updated yet
+                    type: boolean
+                    example: true
+    delete:
+      tags:
+        - translate
+      summary: delete the audio translation of a subslide
+      parameters: 
+      - in: path
+        name: articleId
+        description: Article id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                slidePosition:
+                  description: the position of the slide in which the subslide exists
+                  type: number
+                  example: 0
+                subslidePosition:
+                  description: the position of the subslide
+                  type: number
+                  example: 0
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  slidePosition:
+                    description: the position of the slide in which the subslide exists
+                    type: number
+                    example: 0
+                  subslidePosition:
+                    description: the position of the subslide
+                    type: number
+                    example: 0
+                  audioSynced:
+                    description: a boolean flag that the audio wasnt updated after the text is updated yet
+                    type: boolean
+                    example: false
+                    
+  /translate/{articleId}/audio/tss:
+    post:
+      tags:
+        - translate
+      summary: generate TTS audio for a subslide of a translation article, only available for translation artices controlled by the TTS engine ( tts flag is true in the article document )
+      parameters: 
+      - in: path
+        name: articleId
+        description: Article id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                slidePosition:
+                  description: the position of the slide in which the subslide exists
+                  type: number
+                  example: 0
+                subslidePosition:
+                  description: the position of the subslide
+                  type: number
+                  example: 0
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  audio:
+                    description: the URL of the uploaded audio of the subslide
+                    type: string
+                  slidePosition:
+                    description: the position of the slide in which the subslide exists
+                    type: number
+                    example: 0
+                  subslidePosition:
+                    description: the position of the subslide
+                    type: number
+                    example: 0
+                  audioSynced:
+                    description: a boolean flag that the audio wasnt updated after the text is updated yet
+                    type: boolean
+                    example: true
+  /translate/{articleId}/audio/original:
+    post:
+      tags:
+        - translate
+      summary: Update the audio of a subslide to be the original audio of the video, only available for articles that have the same langCode of the original video
+      parameters: 
+      - in: path
+        name: articleId
+        description: Article id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                slidePosition:
+                  description: the position of the slide in which the subslide exists
+                  type: number
+                  example: 0
+                subslidePosition:
+                  description: the position of the subslide
+                  type: number
+                  example: 0
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  audio:
+                    description: the URL of the uploaded audio of the subslide
+                    type: string
+                  slidePosition:
+                    description: the position of the slide in which the subslide exists
+                    type: number
+                    example: 0
+                  subslidePosition:
+                    description: the position of the subslide
+                    type: number
+                    example: 0
+                  audioSynced:
+                    description: a boolean flag that the audio wasnt updated after the text is updated yet
+                    type: boolean
+                    example: true 
+  /translation/{articleId}/videpSpeed:
+    post:
+      tags:
+        - translate
+      summary: Update the video speed of the subslide's videos
+      parameters: 
+      - in: path
+        name: articleId
+        description: Article id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                videoSpeed:
+                  description: The new video speed for the videos, video speed is a multiplication factor from the original speed ( 0.5 speed is 50% of the original video speed )
+                  type: number
+                  example: 0.5
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: a success flag
+                    type: boolean
+                    example: true
+                  videoSpeedLoading:
+                    description: a flag indicating that speeding up/down the videos are currently in progress
+                    type: boolean
+                    example: true
+  /translationExport/by_article_id/{articleId}:
+    get:
+      tags:
+        - translationExport
+      summary: get translation exports by article id
+      parameters: 
+        - in: path
+          name: articleId
+          description: Article id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          description: the page number for pagination
+          required: true
+          schema:
+            type: number
+            minimum: 1
+            example: 1
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  translationExports:
+                    description: array of translation exports documents
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TranslationExport'
+                  pagesCount:
+                    description: Total number of available pages
+                    type: number
+                    example: 8
+  /translationExport/requestExport:
+    post:
+      tags:
+        - translationExport
+      summary: create a new translation export
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                articleId:
+                  description: the ID of the article for which the translation export is to be created
+                  type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  translationExport:
+                    description: The new created translation export
+                    allOf:
+                      - $ref: '#/components/schemas/TranslationExport'
+                      
+  /translationExport/{translationExportId}/approve:
+    post:
+      tags:
+        - translationExport
+      summary: Approve a translation export ( performed only by organization admins )
+      parameters:
+        - in: path
+          name: translationExportId
+          description: the ID of the translation export to be approved
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: Success flag
+                    type: boolean
+                    example: true
+                  message:
+                    description: Success message
+                    type: string
+              
+  /translationExport/{translationExportId}/decline:
+    post:
+      tags:
+        - translationExport
+      summary: Decline a translation export ( performed only by organization admins )
+      parameters:
+        - in: path
+          name: translationExportId
+          description: the ID of the translation export to be declined
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    description: Success flag
+                    type: boolean
+                    example: true
+  /translationExport/{translationExportId}/audios/generateArchive:
+    post:
+      tags:
+        - translationExport
+      summary: Generate an archive of all audios used in a translation export
+      parameters:
+        - in: path
+          name: translationExportId
+          description: the ID of the translation export
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  queued:
+                    description: a flag indicating the item have been queued for processing
+                    type: boolean
+                    example: true
+                  translationExport:
+                    description: The translation export document, item has been queued to generate the archive
+                    allOf:
+                      - $ref: '#/components/schemas/TranslationExport'
+  /translationExport/{translationExportId}/video/subtitles:
+    post:
+      tags:
+        - translationExport
+      summary: Generate a subtitles file for the translation export subtitles
+      parameters:
+        - in: path
+          name: translationExportId
+          description: the ID of the translation export
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  queued:
+                    description: a flag indicating the item have been queued for processing
+                    type: boolean
+                    example: true
+                  translationExport:
+                    description: The translation export document, item has been queued to generate the subtitles file
+                    allOf:
+                      - $ref: '#/components/schemas/TranslationExport'
+  /translationExport/{translationExportId}/video/burnSubtitles:
+    post:
+      tags:
+        - translationExport
+      summary: Burn the subtitles on the video file for the translation export
+      parameters:
+        - in: path
+          name: translationExportId
+          description: the ID of the translation export
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  queued:
+                    description: a flag indicating the item have been queued for processing
+                    type: boolean
+                    example: true
+                  translationExport:
+                    description: The translation export document, item has been queued to generate the subtitles file
+                    allOf:
+                      - $ref: '#/components/schemas/TranslationExport'
+  /translationExport/{translationExportId}/audioSettings:
+    put:
+      tags:
+        - translationExport
+      summary: Update the audio settings for the translation export
+      parameters:
+        - in: path
+          name: translationExportId
+          description: the ID of the translation export
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required: [voiceVolume, backgroundMusicVolume, normalizeAudio]
+              properties:
+                voiceVolume:
+                  description: the volume of the speaker's voice
+                  type: number
+                  example: 1.5
+                backgroundMusicVolume:
+                  description: the volume of the background music
+                  type: number
+                  example: 1.5
+                normalizeAudio:
+                  description: Wether to use audio normalization or not on the final video
+                  type: boolean
+                  example: true
+                
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  voiceVolume:
+                    description: the volume of the speaker's voice
+                    type: number
+                    example: 1.5
+                  backgroundMusicVolume:
+                    description: the volume of the background music
+                    type: number
+                    example: 1.5
+                  normalizeAudio:
+                    description: Wether to use audio normalization or not on the final video
+                    type: boolean
+                    example: true
+  /subtitles/{subtitlesId}:
+    get:
+      tags:
+        - subtitles
+      summary: Get subtitles document by its id
+      parameters: 
+        - in: path
+          name: subtitlesId
+          description: Subtitle document id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  subtitles:
+                    $ref: '#/components/schemas/Subtitles'
+
+  /subtitles/by_article_id/{articleId}:
+    get:
+      tags:
+        - subtitles
+      summary: get the subtitles of a specific article by article ID
+      parameters: 
+        - in: path
+          name: articleId
+          description: The ID of the article for which to get the subtitles document
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  locked:
+                    description: If the article translation was not exported before, this field will be true as generating subtitles is locked until the first translation export is generated first
+                    type: boolean
+                    example: true
+                  
+  /subtitles/{subtitlesId}/subtitles:
+    post:
+      tags:
+        - subtitles
+      summary: add a new subtitles item
+      parameters: 
+        - in: path
+          name: subtitlesId
+          description: Subtitle document id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                startTime:
+                  description: Start time of the subtitle item in seconds
+                  type: number
+                  example: 11
+                endTime:
+                  description: End time of the subtitle item in seconds
+                  type: number
+                  example: 18
+                text:
+                  description: The text of the new subtitle item
+                  type: string
+                speakerProfile:
+                  $ref: '#/components/schemas/SpeakerProfile'
+                  
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  subtitles:
+                    description: The updated subtitles document
+                    allOf:
+                      - $ref: '#/components/schemas/Subtitles'
+  
+  /subtitles/{subtitlesId}/subtitles/{subtitlePosition}/split:
+    post:
+      tags:
+        - subtitles
+      summary: Split a subtitle item into two items
+      parameters:
+        - in: path
+          name: subtitlesId
+          description: Subtitle document id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: subtitlePosition
+          description: the 'position' of the subtitle item
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                wordIndex:
+                  description: The index of the word in the subtitle text at which to split the subtitle
+                  type: number
+                  example: 12
+                time:
+                  description: the time, in seconds, to assign as the endTime for the first new splitted subtitle and the startTime for the second splitted subtitle
+                  type: number
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  subtitles:
+                    description: the new subtitles document after upate
+                    allOf: 
+                    - $ref: '#/components/schemas/Subtitles'
+  
+  /subtitles/{subtitlesId}/subtitles/{subtitlePosition}:
+    patch:
+      tags:
+        - subtitles
+      summary: Update a subtitle item
+      parameters:
+        - in: path
+          name: subtitlesId
+          description: Subtitle document id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: subtitlePosition
+          description: the 'position' of the subtitle item
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                startTime:
+                  description: The start time of the subtitle in seconds
+                  type: number
+                  example: 5
+                endTime:
+                  description: The end time of the subtitle in seconds
+                  type: number
+                  example: 15
+                position:
+                  description: the position/index of the subtitle item in the subtitles list
+                  type: number
+                  example: 0
+                speakerProfile:
+                  $ref: '#/components/schemas/SpeakerProfile'
+                text:
+                  description: The text content of the subtitle item
+                  type: string
+                  example: This is some subtitle text
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subtitle'
+  
+            
+    delete:
+      tags:
+        - subtitles
+      summary: Delete a subtitle item
+      parameters:
+        - in: path
+          name: subtitlesId
+          description: Subtitle document id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: subtitlePosition
+          description: the 'position' of the subtitle item
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  subtitles:
+                    description: the subtitles document after being changed
+                    allOf:
+                      - $ref: '#/components/schemas/Subtitles'
+  /subtitles/{subtitlesId}/reset:
+    post:
+      tags:
+        - subtitles
+      summary: Reset subtitles to the text and timing from the tranlation article
+      parameters:
+        - in: path
+          name: subtitlesId
+          description: Subtitle document id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success response
+          content:
+            application/json:
+              schema:
+                properties:
+                  subtitles:
+                    description: The subtitles document after being reset
+                    allOf:
+                      - $ref: '#/components/schemas/Subtitles'
+
+components:
+  schemas:
+    ErrorResponse:
+      description: Some error occurred
+      properties:
+        text:
+          description: Error Description
+          type: string
+          example: Something went wrong
+    
+    
+    # DATABASE MODELS
+    User:
+      description: The User model
+      properties:
+        _id:
+          description: Item's id (MongoDB generated id)
+          type: string
+        firstname:
+          description: User's firstname
+          type: string
+          example: John
+        lastname:
+          description: User's lastname
+          type: string
+          example: Doe
+        email:
+          description: User's email
+          type: string
+          example: myemail@example.com
+        password:
+          description: hashed user password
+          type: string
+          example: asdas13kajdsdad2g
+        registerMethod:
+          description: The method the user registered
+          type: string
+          enum: [email, social, invite]
+        organizationRoles:
+          description: The roles for each organization the user is part of
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizationRole'
+        resetCode:
+          description: a temporary reset code generated when the user requests to reset the password
+          type: string
+          
+    Organization:
+      description: Organization model
+      properties:
+        _id:
+          description: Item's id (MongoDB generated id)
+          type: string
+        name:
+          description: Name of the organization
+          type: string
+          example: My Organization
+        logo:
+          description: URL of the organization logo if exists
+          type: string
+          example: https://mylogourl
+
+    OrganizationRole:
+      description: Organization roles model
+      properties:
+        organization:
+          $ref: '#/components/schemas/Organization'
+        organizationOwner:
+          description: Whether the user is this organization owner or not
+          type: boolean
+          example: true
+        permissions:
+          description: set of permissions granted for the user
+          type: array
+          items:
+            type: string
+            enum: [admin, review, translate]
+            example: [review, translate]
+        inviteStatus:
+          description: Invitation status for the organization
+          type: string
+          enum: [pending, accepted, declined]
+        inviteToken:
+          description: The token sent to the user's email to accept/decline invitation
+          type: string
+          example: jhjskah7yd87adjhg21hjdgjhdajkdg212
+    
+    Video:
+      description: Video model
+      properties:
+        _id:
+          description: Item's id (MongoDB generated id)
+          type: string
+        title:
+          description: The title of the video
+          type: string
+          example: My First Video
+        url:
+          description: The URL of the uploaded video
+          type: string
+          example: https://example.com/myvideo.mp4
+        langCode:
+          description: the language code of the video
+          type: string
+          example: en-US
+        numberOfSpeakers:
+          description: The number of speakers in the video
+          type: number
+          minimum: 1
+          maximum: 10
+          example: 2
+        duration:
+          description: The duration in seconds of the video
+          type: number
+          example: 125.5
+        organization:
+          description: The id of the organization for which the video belongs to
+          type: string
+          example: 5dfb77e4145967010afac15a
+        article:
+          description: The id of the main article created out of this video
+          type: string
+          example: 5dfb77e4145967010afac15a
+        subtitle:
+          description: The URL of the subtitle file of the video ( if uploaded with subtitles )
+          type: string
+          example: https://example.com/mysubtitle.srt
+        subtitleType:
+          description: The type of subtitle
+          type: string
+          enum: [srt, vtt]
+        audioUrl:
+          description: the URL of the audio of the uploaded video ( this is automatically extracted and not uploaded )
+          type: string
+          example: https://example.com/videoaudio.mp3
+        thumbnailUrl: 
+          description: the URL of the auto-generated thumbnail image for the uploaded video
+          type: string
+          example: https://example.com/thumbmg.jpg
+        transcriptionUrl:
+          description: the URL of the transcription json file generate by AWS Transcribe for the video
+          type: string
+          example: https://example.com/mytranscription.json
+        backgroundMusicUrl:
+          description: the URL of the background music file of the video, can be either manually uploaded or automatically transposed
+          type: string
+          example: https://example.com/mybgmusic.mp3
+        extractBackgroundMusicLoading:
+          description: a loading flag for when the video's background music is being automatically extracted
+          type: boolean
+          example: false
+          enum: [true, false]
+        backgroundMusicTransposed:
+          description: a flag for either the background music was automatically extracted or not ( uploaded by user )
+          type: boolean
+          example: true
+          enum: [true, false]
+        reviewers:
+          description: a list of users who are assigned to review the video's transcription
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        status: 
+          description: The current status of the video, the main statuses are - 'uploaded' which indicates that the video upload was successfull and ready to be transcribed, 'proofreading' which indicates that the transcription was successfull and ready to be proofread, 'done' which indicates that the process of cutting the video into slides was successfull and ready to be translated
+          type: string
+          example: proofreading
+          enum:
+            - uploading
+            - uploaded
+            - transcriping
+            - cutting
+            - proofreading
+            - converting
+            - failed
+            - done
+    
+    Article:
+      description: the Article model
+      properties:
+        _id:
+          description: Item's id (MongoDB generated id)
+          type: string
+        title:
+          description: The Title of the article ( same as the video title )
+          type: string
+          example: My first video
+        version:
+          description: The version of the article
+          type: number
+          example: 1
+        slides:
+          description: The Slides that composes the article
+          type: array
+          items:
+            $ref: '#/components/schemas/Slide'
+        video:
+          description: The ID of the video from which this article is generated
+          type: string
+          example: djsfjh213kjopqwjak2
+        numberOfSpeakers:
+          description: the number of speakers in this article
+          type: number
+          minimum: 1
+          maximum: 10
+          example: 2
+        speakersProfile:
+          description: The Profiles of speakers in this article
+          type: array
+          items:
+            $ref: '#/components/schemas/SpeakerProfile'
+        organization:
+          description: the ID of the organization for which this article belong
+          type: string
+        converted:
+          description: a boolean flag to donate wether this article have been converted or not, converted article indicates that it's ready to be translated
+          type: boolean
+          example: true
+          enum: [true, false]
+        archived:
+          description: a boolean flag to indicate wether this article is archived or not
+          type: boolean
+          example: false
+          enum: [true, false]
+        toEnglish:
+          description: a boolean flag that indicates if this article is transcriped in one language and got proofread/reviewed in English language
+          type: boolean
+          example: false
+          enum: [true, false]
+        langCode:
+          description: is the original language code of the video when someone clones the article to translate it, this field should be set to be the target language
+          type: string
+          example: en-US
+        langName:
+          description: a custom language field for languages that doesn't have langCode
+          type: string
+        tts:
+          description: a boolean flag to indicate that this article translation's audio is controlled by the Text to speech engine ( audio is generated by tts engine and not recorded by the user )
+          type: boolean
+          example: true
+        articleType:
+          description: The type of the article, an article is either 'original' or 'translation', an original article is the one generated from a video by cutting the video into slides, the translation type is an article cloned from the original article and editable to be translated into another language
+          type: string
+          example: original
+          enum: [original, translation]
+        videoSpeed:
+          description: We allow users to control the speed of the video, either to speed it up or down. this field indicates the speed factor of the final generated video, default value is 1
+          type: number
+          example: 1.2
+        videoSpeedLoading:
+          description: a boolean flag to indicate if the video speed adjusting is currently in progress or not
+          type: boolean
+          example: true
+        originalArticle:
+          description: if this article was cloned to be translated into another language, this field has the ID of the article that it was cloned from
+          type: string
+        translators:
+          description: The set of users assigned to translate this article
+          type: array
+          items:
+            $ref: '#/components/schemas/Translator'
+        exported:
+          description: a boolean flag to indicated if the translation article has been exported for the first time or not
+          type: boolean
+          example: true
+        
+    ArticleWithMetrics:
+      allOf:
+        - type: object
+          properties:
+            metrics:
+              description: a metrics object containing percentages of completed audio/text for the artice
+              type: object
+              properties:
+                completed:
+                  description: Completed metrics
+                  type: object
+                  properties:
+                    audio:
+                      description: Percentage of completed audios in slides
+                      type: number
+                      example: 55
+                    text:
+                      description: Percentage of completed text in slides
+                      type: number
+                      example: 100
+                speakersMetrics:
+                  description: a metric object containing percetanges of completed audios/text per speaker
+                  type: object
+                  properties:
+                    speaker:
+                      $ref: '#/components/schemas/SpeakerProfile'
+                    progress:
+                      description: Completed percentage of that speaker
+                      type: number
+                      example: 44
+        - $ref: '#/components/schemas/Article'            
+    Slide:
+      description: the slide model
+      properties:
+        content:
+          description: the content of the slide which is a composition of multipe subslides
+          type: array
+          items:
+            $ref: '#/components/schemas/Subslide'
+    
+    
+    Subslide:
+      description: the subslide model
+      properties:
+        text:
+          description: The text content of the subslide
+          type: string
+          example: Hello, this is the text content of the subslide
+        name:
+          description: an optional name for the subslide
+          type: string
+        audio:
+          description: The URL of the audio of the subslide
+          type: string
+          example: https://example.com/audio_recording.mp3
+        audioUser:
+          description: The id of user who recorded the audio
+          type: string
+          example: 4asdhkjh12kjhkjskj2mnvc
+        audioProcessed:
+          description: a boolean flag to indicate if audio processing ( background noise cancellation for example ) have been performed on the audio or not
+          type: boolean
+          enum: [true, false]
+          example: true
+        audioSynced:
+          description: Only applicable for articles that are TTS ( text-to-speach ) powered. indicates whether the audio of the subslide is synced with the text or not.
+          type: boolean
+          enum: [true, false]
+          example: false
+        speakerProfile:
+          $ref: '#/components/schemas/SpeakerProfile'
+  
+
+    SpeakerProfile:
+      description: Speaker profile model
+      properties:
+        speakerGender:
+          description: The gender of the speaker
+          type: string
+          enum: [male, female]
+          example: male
+        speakerNumber:
+          description: the number of the speaker ( -1 number is reserver for background music/empty sections)
+          type: integer
+          example: 1
+    
+    Translator:
+      description: Translator model
+      properties:
+        
+        user:
+          $ref: '#/components/schemas/User'
+        speakerNumber:
+          description: The speaker for which the translator is assigned to translate for
+          type: number
+          example: 1
+        invitationStatus:
+          description: The status of inviting a user to translate for a specific speaker
+          type: string
+          example: accepted
+          enum: [accepted, declined, pending]
+        inviteToken:
+          description: a token generated and sent to the invited user to accept/decline the translation invitation
+          type: string
+        invitedBy:
+          description: the ID of the user who invited the translator
+          type: string
+        finishDate:
+          description: a date timestamp by which the translator will finish translating this speaker
+          type: number
+          example: 1578322382460
+        
+    
+    Subtitles:
+      description: The Subtitles model
+      properties:
+        _id:
+          description: Item's id (MongoDB generated id)
+          type: string
+        article:
+          description: The ID of the article for which this subtitles record belongs to
+          type: string
+        video:
+          description: the ID of the video for which the article of this subtitle belong to
+          type: string
+        organization:
+          description: the ID of the organization for which this record belongs to
+          type: string
+        subtites:
+          description: a list of subtitle items
+          type: array
+          items:
+            $ref: '#/components/schemas/Subtitle'
+            
+    Subtitle:
+      description: Subtitle item model
+      properties:
+        startTime:
+          description: The start time of the subtitle in seconds
+          type: number
+          example: 5
+        endTime:
+          description: The end time of the subtitle in seconds
+          type: number
+          example: 15
+        position:
+          description: the position/index of the subtitle item in the subtitles list
+          type: number
+          example: 0
+        speakerProfile:
+          $ref: '#/components/schemas/SpeakerProfile'
+        text:
+          description: The text content of the subtitle item
+          type: string
+          example: This is some subtitle text
+      
+    TranslationExport:
+      description: Translation export model
+      properties:
+        _id:
+          description: Item's id (MongoDB generated id)
+          type: string
+        organization: 
+          description: The organization ID to which this item belongs
+          type: string
+        article:
+          description: The article ID to which this item belongs
+          type: string
+        video:
+          description: the video ID to which this item's article belongs to
+          type: string
+        exportRequestStatus:
+          description: a status flag for the export request, when a translator requests an export it have to be approved by an admin
+          type: string
+          example: pending
+          enum: [pending, accepted, declined]
+        exportRequestBy:
+          description: the user who requested the export
+          allOf:
+            - $ref: '#/components/schemas/User'
+        translationBy:
+          description: the users who participated in the translation
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        approvedBy:
+          description: the user who approved the translation export if it got approved
+          allOf:
+            - $ref: '#/components/schemas/User'
+        declinedBy:
+          description: the user who declined the translation export if it got declined
+          allOf:
+            - $ref: '#/components/schemas/User'
+        progress:
+          description: The progress in % for the export process ( combining individual slides into one video )
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 22.5
+        status:
+          description: the status of the translation export
+          type: string
+          example: queued
+          enum: [queued, processing, done, failed]
+        videoUrl:
+          description: The URL of the composed video ( the final translated video URL )
+          type: string
+        subtitleUrl:
+          description: the URL of the subtitles file of the video, only available when the user requests to generate the subtitle file via api 
+          type: string
+        audiosArchiveUrl:
+          description: the URL of an archive/zip file that contains all individual audio files used in this translation export, only available when the user requests to download the audios archive via the api
+          type: string
+        subtitledVideoUrl:
+          description: the URL of the composed video with subtitles burnt on it. only available when the user requests to burn the subtitles via the api
+          type: string
+        audioArchiveBy:
+          description: The ID of the user who requested to generate the audio archive
+          type: string
+        subtitledVideoBy:
+          description: The ID of the user who requested to burn subtitles in the video
+          type: string
+        subtitleBy:
+          description: the ID of the user who requested to generated the subtitles file
+          type: string
+        audiosArchiveProgress:
+          description: the progress of the archiving process of single audios used in the video
+          type: number
+          example: 10
+          minimum: 0
+          maximum: 100
+        subtitledVideoProgress:
+          description: the progress of the burning subtitles to video process
+          type: number
+          example: 10
+          minimum: 0
+          maximum: 100
+        subtitleProgress:
+          description: the progress of the generating subtitles file process
+          type: number
+          example: 10
+          minimum: 0
+          maximum: 100
+        voiceVolume:
+          description: we allow users to change the volume of the speaker in the video exported from the article, this field indicates the volume factor of the speakers voice in the final generated video, default value is 1
+          type: number
+          example: 1.5  
+        backgroundMusicVolume:
+          description: we allow users to change the volume of the background music in the video exported from the article, this field indicates the volume factor of the background music in the final generated video, default value is 1
+          type: number
+          example: 1.5  
+        normalizeAudio:
+          description: a boolean flag to set Wether to run audio compression/normalization on the exported video or not
+          type: boolean
+          example: true
+        backgroundMusicTransposed:
+          description: a boolean flag to set Wether the background music used in this export was automatically transposed or not
+          type: boolean
+          example: true
+        hasBackgroundMusic:
+          description: a boolean flag to set Wether background music file was used in this export or not
+          type: boolean
+          example: true
+        version:
+          description: The version of the export, version increases after the text/audio of the article changes
+          type: number
+          example: 1
+        subVersion:
+          description: the subversion of the export, subversion is changed after re-exporting the same article without changing text/audio but changing export settings
