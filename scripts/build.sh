@@ -38,7 +38,7 @@ else
         LOGIN_COMMAND=$(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
 
         # CREATE ECR repo if it doesnt exist
-        aws ecr describe-repositories --repository-names $SERVICE_NAMESPACE/${AWS_SERVICE_NAME} || aws ecr create-repository --repository-name ${REPO_NAME}
+        aws ecr describe-repositories --repository-names $SERVICE_NAMESPACE/${AWS_SERVICE_NAME} || aws ecr create-repository --repository-name $SERVICE_NAMESPACE/${AWS_SERVICE_NAME}
 
         # save it to an env var & use that env var to login
         $LOGIN_COMMAND
