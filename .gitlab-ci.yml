@@ -19,6 +19,7 @@ build-master:
     - apk add --update curl
     - apk upgrade -f
     - curl -o build.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/build.sh
+    - chmod +X build.sh
     - source build.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service
   only:
     - master
@@ -34,6 +35,7 @@ deploy-production:
     - apk add --update curl
     - apk upgrade -f
     - curl -o deploy.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/deploy.sh
+    - chmod +X deploy.sh
     - source deploy.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service 
   when: manual
   only:
