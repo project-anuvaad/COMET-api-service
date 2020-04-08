@@ -6,7 +6,7 @@ echo "Starting Deployment"
 echo "SERVICE NAME = " + $AWS_SERVICE_NAME
 # Install AWS CLI
 echo " INSTALLING AWS CLI "
-apk add --update python python-dev py-pip jq
+apk add --update python python-dev py-pip jq curl
 pip install awscli --upgrade
 echo " INSTALLING KUBECTL"
 curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/kubectl
