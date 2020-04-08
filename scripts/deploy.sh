@@ -9,10 +9,17 @@ echo " INSTALLING AWS CLI "
 apk add --update python python-dev py-pip jq curl
 apk upgrade -f
 pip install awscli --upgrade
+
 echo " INSTALLING KUBECTL"
 curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/kubectl
 chmod +x ./kubectl
 mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+
+echo "INSTALLING IAM AUTHENTICATOR"
+curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/aws-iam-authenticator
+chmod +x ./aws-iam-authenticator
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+
 echo "CONFIGURING AWS"
 # Configure AWS Access Key ID
 aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
@@ -32,6 +39,9 @@ LOGIN_COMMAND=$(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGIO
 $LOGIN_COMMAND
 
 # configure kubectl
+echo "UPDATING kubeconfig"
 aws eks update-kubeconfig --name $VIDEOWIKI_EKS_CLUSTER_NAME --region $AWS_DEFAULT_REGION
+cat ~/.kube/config
+echo "UPDATING CONTAINER IMAGE"
 kubectl set image deployments/$AWS_SERVICE_NAME-deployment $AWS_SERVICE_NAME=$BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA}
 
