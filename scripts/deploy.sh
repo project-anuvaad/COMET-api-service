@@ -41,7 +41,6 @@ $LOGIN_COMMAND
 # configure kubectl
 echo "UPDATING kubeconfig"
 aws eks update-kubeconfig --name $VIDEOWIKI_EKS_CLUSTER_NAME --region $AWS_DEFAULT_REGION
-cat ~/.kube/config
 echo "UPDATING CONTAINER IMAGE"
 kubectl set image deployments/$AWS_SERVICE_NAME-deployment $AWS_SERVICE_NAME=$BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA}
 
