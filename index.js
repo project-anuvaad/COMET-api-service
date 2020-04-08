@@ -38,6 +38,7 @@ app.use(compression({ threshold: 0 }))
 
 require('./router/index.js')(app) // pass our application into our routes
 
+console.log(' API GATEWAY SERVICE ');
 server.listen(PORT)
 console.log(`Magic happens on port ${PORT}`)       // shoutout to the user
 console.log(`==== Running in ${process.env.NODE_ENV} mode ===`)
