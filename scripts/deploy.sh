@@ -1,47 +1,36 @@
-# export AWS_CLUSTER_NAME=$1
-# export AWS_SERVICE_NAME=$2
-# export AWS_REPO_NAME=$3
-# export TARGET_REPO=$AWS_ECR_ACCOUNT_URL/$AWS_REPO_NAME:${CI_COMMIT_SHA}
+export BASE_REPO=$1
+export SERVICE_NAMESPACE=$2
+export AWS_SERVICE_NAME=$3
 
-# if ["$1" = ""] || ["$2" = ""] || ["$3" = ""]; then
-#     echo "Usage: source deploy.sh cluster-name service-name ecs-repo-name"
-#     exit 1
-# else
-#     echo "Starting Deployment"
-#     echo "CLUSTER NAME = " + $AWS_CLUSTER_NAME
-#     echo "SERVICE NAME = " + $AWS_SERVICE_NAME
-#     # Install AWS CLI
-#     echo " INSTALLING AWS CLI "
-#     apk add --update python python-dev py-pip jq
-#     pip install awscli --upgrade
-#     pip install ecs-deploy
+echo "Starting Deployment"
+echo "SERVICE NAME = " + $AWS_SERVICE_NAME
+# Install AWS CLI
+echo " INSTALLING AWS CLI "
+apk add --update python python-dev py-pip jq
+pip install awscli --upgrade
+echo " INSTALLING KUBECTL"
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+echo "CONFIGURING AWS"
+# Configure AWS Access Key ID
+aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
 
-#     echo "CONFIGURING AWS"
-#     # Configure AWS Access Key ID
-#     aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+# Configure AWS Secret Access Key
+aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
 
-#     # Configure AWS Secret Access Key
-#     aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+# Configure AWS default region
+aws configure set region $AWS_DEFAULT_REGION --profile default
 
-#     # Configure AWS default region
-#     aws configure set region $AWS_DEFAULT_REGION --profile default
+echo "LOGGING IN AWS ECR"
+# Log into Amazon ECR
+# aws ecr get-login returns a login command w/ a temp token
+LOGIN_COMMAND=$(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
 
-#     echo "LOGGING IN AWS ECR"
-#     # Log into Amazon ECR
-#     # aws ecr get-login returns a login command w/ a temp token
-#     LOGIN_COMMAND=$(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+# save it to an env var & use that env var to login
+$LOGIN_COMMAND
 
-#     # save it to an env var & use that env var to login
-#     $LOGIN_COMMAND
+# configure kubectl
+aws eks update-kubeconfig --name $VIDEOWIKI_EKS_CLUSTER_NAME --region $AWS_DEFAULT_REGION
+kubectl set image deployments/$AWS_SERVICE_NAME-deployment $AWS_SERVICE_NAME=$BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA}
 
-#     # # Pull image from gitlab registry
-#     # docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-
-#     # docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $TARGET_REPO
-
-#     # Push docker image to ECS REGISTRY
-#     # docker push $TARGET_REPO
-
-#     # Deploy service update
-#     ecs deploy ${AWS_CLUSTER_NAME} ${AWS_SERVICE_NAME} --timeout -1 --image ${AWS_SERVICE_NAME} $TARGET_REPO
-# fi

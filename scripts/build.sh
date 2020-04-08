@@ -1,5 +1,6 @@
-export TARGET_REPO=$1
-
+export BASE_REPO=$1
+export SERVICE_NAMESPACE=$2
+export AWS_SERVICE_NAME=$3
 if ["$1" = ""]; then
         echo "Usage: source build.sh cluster-name service-name ecs-repo-name"
         exit 1
@@ -10,12 +11,12 @@ else
                 --build-arg FRONTEND_HOST_PROTOCOL=${FRONTEND_HOST_PROTOCOL} \
                 --build-arg SECRET_STRING=${SECRET_STRING} \
                 -f Dockerfile \
-                -t $TARGET_REPO:${CI_COMMIT_SHA} \
-                -t $TARGET_REPO:master \
+                -t $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA} \
+                -t $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:master \
                 .
 
         echo "PUSHING IMAGE"
-        echo "REPO NAME = " + $TARGET_REPO
+        echo "REPO NAME = " + $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME
         # Install AWS CLI
         echo " INSTALLING AWS CLI "
         apk add --update python python-dev py-pip jq
@@ -36,12 +37,15 @@ else
         # aws ecr get-login returns a login command w/ a temp token
         LOGIN_COMMAND=$(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
 
+        # CREATE ECR repo if it doesnt exist
+        aws ecr describe-repositories --repository-names $SERVICE_NAMESPACE/${AWS_SERVICE_NAME} || aws ecr create-repository --repository-name ${REPO_NAME}
+
         # save it to an env var & use that env var to login
         $LOGIN_COMMAND
-        echo "Pushing to " + $TARGET_REPO:${CI_COMMIT_SHA}
-        docker push $TARGET_REPO:${CI_COMMIT_SHA}
-        echo "Pushing to " + $TARGET_REPO:master
-        docker push $TARGET_REPO:master
+        echo "Pushing to " + $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA}
+        docker push $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:${CI_COMMIT_SHA}
+        echo "Pushing to " + $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:master
+        docker push $BASE_REPO/$SERVICE_NAMESPACE/$AWS_SERVICE_NAME:master
 fi
 #         -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME \
 #         .

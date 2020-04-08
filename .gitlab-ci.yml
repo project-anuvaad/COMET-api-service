@@ -16,22 +16,20 @@ build-master:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - source scripts/build.sh $AWS_ECR_ACCOUNT_URL/videowiki/api_gateway_service
+    - source scripts/build.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service
   only:
     - master
 
-# deploy-production:
-#   image: docker:18-git
-#   stage: deploy
-#   dependencies:
-#     - build-master
-#   services:
-#     - docker:18-dind
-#   before_script:
-#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#   script:
-#     - source scripts/deploy.sh TVW tvw_backend tvw/tvw_backend
-#   when: manual
-#   only:
-#     - master
+deploy-production:
+  image: docker:18-git
+  stage: deploy
+  dependencies:
+    - build-master
+  services:
+    - docker:18-dind
+  script:
+    - source scripts/deploy.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service 
+  when: manual
+  only:
+    - master
 
