@@ -1,5 +1,5 @@
 FROM node:10.15.0-jessie
-WORKDIR /api_gateway_service
+WORKDIR /api-gateway-service
 
 ARG FRONTEND_HOST_NAME
 ARG FRONTEND_HOST_PROTOCOL
