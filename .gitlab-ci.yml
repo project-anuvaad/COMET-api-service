@@ -16,7 +16,10 @@ build-master:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - source scripts/build.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service
+    - apk add --update curl
+    - apk upgrade -f
+    - curl -o build.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/build.sh
+    - source build.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service
   only:
     - master
 
@@ -28,7 +31,10 @@ deploy-production:
   services:
     - docker:18-dind
   script:
-    - source scripts/deploy.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service 
+    - apk add --update curl
+    - apk upgrade -f
+    - curl -o deploy.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/deploy.sh
+    - source deploy.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service 
   when: manual
   only:
     - master
