@@ -30,11 +30,11 @@ module.exports = (app) => {
     return next();
   });
 
-  app.use('/auth', createProxyRouter(process.env.AUTH_SERVICE_API_ROOT));
+  app.use('/api/auth', createProxyRouter(process.env.AUTH_SERVICE_API_ROOT));
 
-  app.use('/invitations', createProxyRouter(process.env.INVITATION_RESPONSE_API_SERVICE_API_ROOT));
+  app.use('/api/invitations', createProxyRouter(process.env.INVITATION_RESPONSE_API_SERVICE_API_ROOT));
   // Upload contribute video
-  app.use('/videoTutorialContribution', createProxyRouter(process.env.VIDEO_TUTORIAL_CONTRIBUTION_API_SERVICE_API_ROOT));
+  app.use('/api/videoTutorialContribution', createProxyRouter(process.env.VIDEO_TUTORIAL_CONTRIBUTION_API_SERVICE_API_ROOT));
 
   app.use(async (req, res, next) => {
     let token = req.header('x-access-token');
@@ -54,6 +54,7 @@ module.exports = (app) => {
           let userData;
           userService.getUserByEmail(decoded.email)
             .then((user) => {
+              if (!user) throw new Error('Invalid user')
               req.user = user;
               userData = user;
               req.headers['vw-user-data'] = JSON.stringify(user)
@@ -67,7 +68,6 @@ module.exports = (app) => {
                 userData.organizationRoles.forEach((role) => {
                   apiKeyService.findOne({ user: req.user._id, organization: role.organization._id })
                     .then((apiKey) => {
-                      console.log('================= API KEY ====================', apiKey)
                       if (!apiKey || !apiKey.key) {
                         apiKeyService.generateApiKey().then(key => {
                           return apiKeyService.create({
@@ -135,18 +135,18 @@ module.exports = (app) => {
   });
 
   /* Server Routes */
-  app.use('/user', createProxyRouter(process.env.USER_API_SERVICE_API_ROOT));
-  app.use('/video', createProxyRouter(process.env.VIDEO_API_SERVICE_API_ROOT));
-  app.use('/article', createProxyRouter(process.env.ARTICLE_API_SERVICE_API_ROOT));
-  app.use('/translate', createProxyRouter(process.env.TRANSLATION_API_SERVICE_API_ROOT));
-  app.use('/translationExport', createProxyRouter(process.env.TRANSLATION_EXPORT_API_SERVICE_API_ROOT));
-  app.use('/comment', createProxyRouter(process.env.COMMENT_API_SERVICE_API_ROOT));
-  app.use('/organization', createProxyRouter(process.env.ORGANIZATION_API_SERVICE_API_ROOT))
-  app.use('/notification', createProxyRouter(process.env.NOTIFICATION_API_SERVICE_API_ROOT))
-  app.use('/subtitles', createProxyRouter(process.env.SUBTITLES_API_SERVICE_API_ROOT))
+  app.use('/api/user', createProxyRouter(process.env.USER_API_SERVICE_API_ROOT));
+  app.use('/api/video', createProxyRouter(process.env.VIDEO_API_SERVICE_API_ROOT));
+  app.use('/api/article', createProxyRouter(process.env.ARTICLE_API_SERVICE_API_ROOT));
+  app.use('/api/translate', createProxyRouter(process.env.TRANSLATION_API_SERVICE_API_ROOT));
+  app.use('/api/translationExport', createProxyRouter(process.env.TRANSLATION_EXPORT_API_SERVICE_API_ROOT));
+  app.use('/api/comment', createProxyRouter(process.env.COMMENT_API_SERVICE_API_ROOT));
+  app.use('/api/organization', createProxyRouter(process.env.ORGANIZATION_API_SERVICE_API_ROOT))
+  app.use('/api/notification', createProxyRouter(process.env.NOTIFICATION_API_SERVICE_API_ROOT))
+  app.use('/api/subtitles', createProxyRouter(process.env.SUBTITLES_API_SERVICE_API_ROOT))
 
-  app.use('/noiseCancellationVideo', createProxyRouter(process.env.NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT))
-  app.use('/apikey', createProxyRouter(process.env.APIKEY_API_SERVICE_API_ROOT));
+  app.use('/api/noiseCancellationVideo', createProxyRouter(process.env.NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT))
+  app.use('/api/apikey', createProxyRouter(process.env.APIKEY_API_SERVICE_API_ROOT));
 
   app.use(bodyParser.json({ limit: '50mb' })) // parse application/json
   app.use(bodyParser.json({ type: 'application/vnd.api+json' })) // parse application/vnd.api+json as json
@@ -173,5 +173,11 @@ function createRouter() {
 }
 
 function createProxy(TARGET) {
-  return require('express-http-proxy')(TARGET, { limit: '500mb' });
+  const proxyParams = {
+    limit: '500mb',
+    filter(req) {
+      return req.path.indexOf('/db') !== 0 && req.path.indexOf('/api/db') !== 0;
+    }
+  }
+  return require('express-http-proxy')(TARGET, proxyParams);
 }
