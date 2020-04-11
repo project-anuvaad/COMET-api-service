@@ -147,6 +147,7 @@ module.exports = (app) => {
 
   app.use('/api/noiseCancellationVideo', createProxyRouter(process.env.NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT))
   app.use('/api/apikey', createProxyRouter(process.env.APIKEY_API_SERVICE_API_ROOT));
+  app.use('/api/whatsapp-webhook', createProxyRouter(process.env.WHATSAPP_MESSAGE_WEBHOOK_API_ROOT))
 
   app.use(bodyParser.json({ limit: '50mb' })) // parse application/json
   app.use(bodyParser.json({ type: 'application/vnd.api+json' })) // parse application/vnd.api+json as json
