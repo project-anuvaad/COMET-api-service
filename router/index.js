@@ -1,8 +1,10 @@
+const process = global.process;
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const SECRET_STRING = process.env.SECRET_STRING;
 const express = require('express');
+
 
 const {
   USER_SERVICE_API_ROOT,

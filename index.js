@@ -1,4 +1,4 @@
-const path = require('path')
+const process = global.process;
 const express = require('express')
 const morgan = require('morgan')
 const methodOverride = require('method-override')
