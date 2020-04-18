@@ -1,5 +1,4 @@
 const process = global.process;
-const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const SECRET_STRING = process.env.SECRET_STRING;
@@ -94,15 +93,6 @@ module.exports = (app) => {
                       console.log('error api key', err)
                     })
                 })
-                // organization: { type: Schema.Types.ObjectId, ref: SchemaNames.organization },
-                // user: { type: Schema.Types.ObjectId, ref: SchemaNames.user },
-
-                // key: String,
-                // origins: [String],
-                // active: { type: Boolean, default: true },
-
-                // created_at: { type: Number, default: Date.now },
-                // console.log(process.env)
               }
             })
             .catch((err) => {
@@ -113,50 +103,122 @@ module.exports = (app) => {
       });
     } else {
       const apiKeyVal = req.header('vw-x-user-api-key');
+      const apiKeySecretVal = req.header('vw-x-user-api-key-secret');
       if (apiKeyVal) {
         apiKeyService.findOne({ key: apiKeyVal })
           .then((apiKey) => {
             if (!apiKey) return res.status(400).send('Invalid api key');
+            if (apiKey.keyType === 'service' && (!apiKeySecretVal || apiKeySecretVal !== apiKey.secret)) {
+              return res.status(401).send('invalid header vw-x-user-api-key-secret value')
+            }
             userService.findById(apiKey.user)
-            .then((userData) => {
-              return userService.getUserByEmail(userData.email)
-            })
-            .then(user => {
-              req.user = user;
-              req.headers['vw-user-data'] = JSON.stringify(user)
-              return next();
-            })
-            .catch(err => {
-              console.log(err)
-              return next();
-            })
+              .then((userData) => {
+                return userService.getUserByEmail(userData.email)
+              })
+              .then(user => {
+                req.user = user;
+                req.headers['vw-user-data'] = JSON.stringify(user)
+                return next();
+              })
+              .catch(err => {
+                console.log('something went wrong', err)
+                return res.status(400).send('Something went wrong');
+              })
           })
       } else {
         next();
+        // return res.status(401).send('Unauthorized');
       }
     }
   });
 
+  const { createProxyMiddleware } = require('http-proxy-middleware');
   /* Server Routes */
-  app.use('/api/user', createProxyRouter(process.env.USER_API_SERVICE_API_ROOT));
-  app.use('/api/video', createProxyRouter(process.env.VIDEO_API_SERVICE_API_ROOT));
-  app.use('/api/article', createProxyRouter(process.env.ARTICLE_API_SERVICE_API_ROOT));
-  app.use('/api/translate', createProxyRouter(process.env.TRANSLATION_API_SERVICE_API_ROOT));
-  app.use('/api/translationExport', createProxyRouter(process.env.TRANSLATION_EXPORT_API_SERVICE_API_ROOT));
-  app.use('/api/comment', createProxyRouter(process.env.COMMENT_API_SERVICE_API_ROOT));
-  app.use('/api/organization', createProxyRouter(process.env.ORGANIZATION_API_SERVICE_API_ROOT))
-  app.use('/api/notification', createProxyRouter(process.env.NOTIFICATION_API_SERVICE_API_ROOT))
-  app.use('/api/subtitles', createProxyRouter(process.env.SUBTITLES_API_SERVICE_API_ROOT))
+  const ROUTES = [
+    {
+      path: '/api/video',
+      proxyTo: process.env.VIDEO_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/user',
+      proxyTo: process.env.USER_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/article',
+      proxyTo: process.env.ARTICLE_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/translate',
+      proxyTo: process.env.TRANSLATION_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/translationExport',
+      proxyTo: process.env.TRANSLATION_EXPORT_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/comment',
+      proxyTo: process.env.COMMENT_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/organization',
+      proxyTo: process.env.ORGANIZATION_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/notification',
+      proxyTo: process.env.NOTIFICATION_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/subtitles',
+      proxyTo: process.env.SUBTITLES_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/noiseCancellationVideo',
+      proxyTo: process.env.NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/apikey',
+      proxyTo: process.env.APIKEY_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/noiseCancellation',
+      proxyTo: process.env.NOISE_CANCELLATION_API_SERVICE_API_ROOT,
+    }
+  ]
+  ROUTES.forEach((route) => {
+    const proxy = createProxyMiddleware({
+      target: `http://` + route.proxyTo,
+      pathRewrite: function(path) {
+        let newPath = path.replace(new RegExp(`^${route.path}/?`, 'i'), '/')
+        console.log(path, '===================================================', newPath)
+        if (newPath.indexOf('/db') === 0 || newPath.indexOf('db') === 0) {
+          newPath.replace('db', '')
+        }
+        return newPath
+      }
+    })
+    app.use(route.path, proxy)
 
-  app.use('/api/noiseCancellationVideo', createProxyRouter(process.env.NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT))
-  app.use('/api/apikey', createProxyRouter(process.env.APIKEY_API_SERVICE_API_ROOT));
+  })
+  // app.use('/api/video', createProxyRouter(process.env.VIDEO_API_SERVICE_API_ROOT));
+  // app.use('/api/user', createProxyRouter(process.env.USER_API_SERVICE_API_ROOT));
+  // app.use('/api/article', createProxyRouter(process.env.ARTICLE_API_SERVICE_API_ROOT));
+  // app.use('/api/translate', createProxyRouter(process.env.TRANSLATION_API_SERVICE_API_ROOT));
+  // app.use('/api/translationExport', createProxyRouter(process.env.TRANSLATION_EXPORT_API_SERVICE_API_ROOT));
+  // app.use('/api/comment', createProxyRouter(process.env.COMMENT_API_SERVICE_API_ROOT));
+  // app.use('/api/organization', createProxyRouter(process.env.ORGANIZATION_API_SERVICE_API_ROOT))
+  // app.use('/api/notification', createProxyRouter(process.env.NOTIFICATION_API_SERVICE_API_ROOT))
+  // app.use('/api/subtitles', createProxyRouter(process.env.SUBTITLES_API_SERVICE_API_ROOT))
 
-  app.use(bodyParser.json({ limit: '50mb' })) // parse application/json
-  app.use(bodyParser.json({ type: 'application/vnd.api+json' })) // parse application/vnd.api+json as json
-  app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })) // parse application/x-www-form-urlencoded
+  // app.use('/api/noiseCancellationVideo', createProxyRouter(process.env.NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT))
+  // app.use('/api/apikey', createProxyRouter(process.env.APIKEY_API_SERVICE_API_ROOT));
 
-  // app.use('/noiseCancellationVideo', noiseCancellationVideoModule.routes.mount(createRouter()));
-  // app.use('/apikey', apiKeyModule.routes.mount(createRouter()));
+  // app.use('/api/noiseCancellation', createProxyRouter(process.env.NOISE_CANCELLATION_API_SERVICE_API_ROOT))
+
+  // const bodyParser = require('body-parser');
+  // app.use(bodyParser.json({ limit: '50mb' })) // parse application/json
+  // app.use(bodyParser.json({ type: 'application/vnd.api+json' })) // parse application/vnd.api+json as json
+  // app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })) // parse application/x-www-form-urlencoded
+
 
   app.get('/*', (req, res) => {
     console.log(req.path)
@@ -186,3 +248,30 @@ function createProxy(TARGET) {
   console.log('creating proxy for', TARGET)
   return require('express-http-proxy')(TARGET, proxyParams);
 }
+
+
+// const apiKeyVal = req.header('vw-x-user-api-key');
+// const apiKeySecretVal = req.header('vw-x-user-api-key-secret');
+
+// setTimeout(() => {
+//   const superagent = require('superagent');
+//   let superdebug = require('superagent-debugger');
+  
+//   const fs = require('fs');
+//   [1,2,3,4,5,6,7,8,9,10].forEach((a) => {
+//     // [1].forEach(() => {
+
+//     superagent.post(`http://localhost:4000/api/noiseCancellation/audio`)
+//     .set('vw-x-user-api-key', 'fa2c4f2e-e415-44f5-8dc5-c2ac2ef6d59e-1587095552652')
+//     .set('vw-x-user-api-key-secret', '8d250fa7-c7eb-4117-995a-60a9154a40dc-1587095552652')
+//     .attach('file', fs.createReadStream('audio-930a4b9b-ac1a-4295-8707-50747400a6a2.mp3'))
+//     .use(superdebug.default(console.info))
+    
+//     .then(res => {
+//       fs.writeFileSync('cleared2.mp3', res.body)
+//     })
+//     .catch(err => {
+//       console.log(err)
+//     })
+//   })
+// }, 2000);

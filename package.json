@@ -32,6 +32,7 @@
     "fs": "0.0.1-security",
     "get-audio-duration": "^1.0.0",
     "handlebars": "^4.1.2",
+    "http-proxy-middleware": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "mailgun-js": "^0.22.0",
@@ -47,6 +48,7 @@
     "socket.io-emitter": "^3.1.1",
     "socket.io-redis": "^5.2.0",
     "superagent": "^5.1.0",
+    "superagent-debugger": "^1.2.9",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
