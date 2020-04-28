@@ -30,7 +30,9 @@ module.exports = (app) => {
 
     return next();
   });
-  app.use('/api/whatsapp-webhook', createProxyRouter(process.env.WHATSAPP_BOT_API_ROOT))
+  if (process.env.WHATSAPP_BOT_API_ROOT) {
+    app.use('/api/whatsapp-webhook', createProxyRouter(process.env.WHATSAPP_BOT_API_ROOT))
+  }
 
   app.use('/api/auth', createProxyRouter(process.env.AUTH_SERVICE_API_ROOT));
 
