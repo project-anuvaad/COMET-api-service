@@ -190,19 +190,18 @@ module.exports = (app) => {
     }
   ]
   ROUTES.forEach((route) => {
-    // const proxy = createProxyMiddleware({
-    //   target: `http://` + route.proxyTo,
-    //   pathRewrite: function(path) {
-    //     let newPath = path.replace(new RegExp(`^${route.path}/?`, 'i'), '/')
-    //     console.log(path, '===================================================', newPath)
-    //     if (newPath.indexOf('/db') === 0 || newPath.indexOf('db') === 0) {
-    //       newPath.replace('db', '')
-    //     }
-    //     return newPath
-    //   }
-    // })
-    // app.use(route.path, proxy)
-    app.use(route.path, createProxyRouter(route.proxyTo));
+    const proxy = createProxyMiddleware({
+      target: `http://` + route.proxyTo,
+      pathRewrite: function(path) {
+        let newPath = path.replace(new RegExp(`^${route.path}/?`, 'i'), '/')
+        console.log(path, '===================================================', newPath)
+        if (newPath.indexOf('/db') === 0 || newPath.indexOf('db') === 0) {
+          newPath.replace('db', '')
+        }
+        return newPath
+      }
+    })
+    app.use(route.path, proxy)
 
   })
   // app.use('/api/video', createProxyRouter(process.env.VIDEO_API_SERVICE_API_ROOT));
