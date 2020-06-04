@@ -46,14 +46,16 @@ module.exports = (app) => {
     if (PUBLIC_ROUTES.some(s => req.path.match(s))) return next();
 
     if (token) {
+      console.log('got token')
       jwt.verify(token, SECRET_STRING, (err, decoded) => {
-
         if (err) {
+          console.log('token verify error', err)
           return res.json({
             success: false,
             message: 'Token is not valid'
           });
         } else {
+          console.log('token valid', decoded)
           req.decoded = decoded;
           let userData;
           userService.getUserByEmail(decoded.email)
@@ -62,6 +64,7 @@ module.exports = (app) => {
               req.user = user;
               userData = user;
               req.headers['vw-user-data'] = JSON.stringify(user)
+              console.log('forwarding request')
               next();
               return Promise.resolve();
             })
