@@ -195,13 +195,18 @@ module.exports = (app) => {
   ROUTES.forEach((route) => {
     const proxy = createProxyMiddleware({
       target: `http://` + route.proxyTo,
-      pathRewrite: function(path) {
+      pathRewrite: function (path) {
         let newPath = path.replace(new RegExp(`^${route.path}/?`, 'i'), '/')
         console.log(path, '===================================================', newPath)
         if (newPath.indexOf('/db') === 0 || newPath.indexOf('db') === 0) {
           newPath.replace('db', '')
         }
         return newPath
+      },
+      onError: function (err, req, res) {
+        console.log('================================== proxy Error ============================= ')
+        console.log(err)
+        res.status(400).send(err.message)
       }
     })
     app.use(route.path, proxy)
@@ -264,7 +269,7 @@ function createProxy(TARGET) {
 // setTimeout(() => {
 //   const superagent = require('superagent');
 //   let superdebug = require('superagent-debugger');
-  
+
 //   const fs = require('fs');
 //   [1,2,3,4,5,6,7,8,9,10].forEach((a) => {
 //     // [1].forEach(() => {
@@ -274,7 +279,7 @@ function createProxy(TARGET) {
 //     .set('vw-x-user-api-key-secret', '8d250fa7-c7eb-4117-995a-60a9154a40dc-1587095552652')
 //     .attach('file', fs.createReadStream('audio-930a4b9b-ac1a-4295-8707-50747400a6a2.mp3'))
 //     .use(superdebug.default(console.info))
-    
+
 //     .then(res => {
 //       fs.writeFileSync('cleared2.mp3', res.body)
 //     })
