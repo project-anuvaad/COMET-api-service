@@ -64,7 +64,7 @@ module.exports = (app) => {
               req.user = user;
               userData = user;
               req.headers['vw-user-data'] = JSON.stringify(user)
-              console.log('forwarding request')
+              console.log('forwarding request', userData)
               next();
               return Promise.resolve();
             })
@@ -72,10 +72,13 @@ module.exports = (app) => {
               // BACKWARD COMPATABILITY
               // if the user doesn't have an associated api key, create one for him
               if (!userData.apiKey) {
+                console.log('no api key')
                 userData.organizationRoles.forEach((role) => {
+                  console.log(role.organization)
                   apiKeyService.findOne({ user: req.user._id, organization: role.organization._id })
                     .then((apiKey) => {
                       if (!apiKey || !apiKey.key) {
+                        console.log('creating api key');
                         apiKeyService.generateApiKey().then(key => {
                           return apiKeyService.create({
                             organization: role.organization._id,
