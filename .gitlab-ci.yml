@@ -7,6 +7,7 @@ before_script:
 stages:
   - build
   - deploy
+  - release
   
 build-master:
   image: docker:18-git
@@ -40,4 +41,19 @@ deploy-production:
   when: manual
   only:
     - master
-
+release-version:
+  image: docker:18-git
+  stage: release
+  dependencies:
+    - build-master
+  services:
+    - docker:18-dind
+  script:
+    - apk add --update curl
+    - apk upgrade -f
+    - curl -o release.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/release.sh
+    - chmod +X release.sh
+    - source release.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service $RELEASE_VERSION_NUMBER
+  when: manual
+  only:
+    - master
