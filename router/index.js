@@ -21,6 +21,9 @@ const PUBLIC_ROUTES = [
 
 module.exports = (app) => {
   // Decode uri component for all params in GET requests
+  app.get('/health', (req, res) => {
+    return res.status(200).send('OK');
+  })
   app.get('*', (req, res, next) => {
     if (req.query) {
       Object.keys(req.query).forEach((key) => {
