@@ -187,6 +187,10 @@ module.exports = (app) => {
     {
       path: '/api/noiseCancellation',
       proxyTo: process.env.NOISE_CANCELLATION_API_SERVICE_API_ROOT,
+    },
+    {
+      path: '/api/folder',
+      proxyTo: process.env.FOLDER_API_SERVICE_API_ROOT,
     }
   ]
   ROUTES.forEach((route) => {
