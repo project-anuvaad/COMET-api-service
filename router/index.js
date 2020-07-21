@@ -49,7 +49,6 @@ module.exports = (app) => {
     if (PUBLIC_ROUTES.some(s => req.path.match(s))) return next();
 
     if (token) {
-      console.log('got token')
       jwt.verify(token, SECRET_STRING, (err, decoded) => {
         if (err) {
           console.log('token verify error', err)
@@ -58,7 +57,6 @@ module.exports = (app) => {
             message: 'Token is not valid'
           });
         } else {
-          console.log('token valid')
           req.decoded = decoded;
           let userData;
           userService.getUserByEmail(decoded.email)
@@ -67,41 +65,40 @@ module.exports = (app) => {
               req.user = user;
               userData = user;
               req.headers['vw-user-data'] = JSON.stringify(user)
-              console.log('forwarding request')
               next();
               return Promise.resolve();
             })
             .then(() => {
               // BACKWARD COMPATABILITY
               // if the user doesn't have an associated api key, create one for him
-              if (!userData.apiKey) {
+              apiKeyService.find({ user: req.user._id })
+              .then((apiKeys) => {
                 userData.organizationRoles.forEach((role) => {
-                  apiKeyService.findOne({ user: req.user._id, organization: role.organization._id })
-                    .then((apiKey) => {
-                      if (!apiKey || !apiKey.key) {
-                        apiKeyService.generateApiKey().then(key => {
-                          return apiKeyService.create({
-                            organization: role.organization._id,
-                            user: userData._id,
-                            key,
-                            origins: [role.organization.name.replace(/\s/g, '-').toLowerCase() + '.' + process.env.FRONTEND_HOST_NAME],
-                            active: true,
-                            userKey: true,
-                          })
-                        })
-                          .then((apiKey) => {
-                            console.log('created api key', apiKey)
-                          })
-                          .catch(err => {
-                            console.log('error creating api key', err)
-                          })
-                      }
+                  const apiKey = apiKeys.find(k => k.organization === role.organization._id);
+                  if (!apiKey || !apiKey.key) {
+                    apiKeyService.generateApiKey().then(key => {
+                      return apiKeyService.create({
+                        organization: role.organization._id,
+                        user: userData._id,
+                        key,
+                        origins: [role.organization.name.replace(/\s/g, '-').toLowerCase() + '.' + process.env.FRONTEND_HOST_NAME],
+                        active: true,
+                        userKey: true,
+                      })
                     })
-                    .catch(err => {
-                      console.log('error api key', err)
-                    })
+                      .then((apiKey) => {
+                        console.log('created api key', apiKey)
+                      })
+                      .catch(err => {
+                        console.log('error creating api key', err)
+                      })
+                  } 
                 })
-              }
+
+              })
+              .catch(err => {
+                  console.log('error api key', err)
+              })
             })
             .catch((err) => {
               console.log(err);
@@ -197,7 +194,6 @@ module.exports = (app) => {
       target: `http://` + route.proxyTo,
       pathRewrite: function (path) {
         let newPath = path.replace(new RegExp(`^${route.path}/?`, 'i'), '/')
-        console.log(path, '===================================================', newPath)
         if (newPath.indexOf('/db') === 0 || newPath.indexOf('db') === 0) {
           newPath.replace('db', '')
         }
@@ -229,7 +225,6 @@ module.exports = (app) => {
 
 
   app.get('/*', (req, res) => {
-    console.log(req.path)
     res.status(404).send('Not found');
   });
 
