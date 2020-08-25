@@ -3,12 +3,21 @@ const express = require('express')
 const morgan = require('morgan')
 const methodOverride = require('method-override')
 const compression = require('compression')
+const mongoose = require('mongoose')
+
 
 const app = express()
 const server = require('http').Server(app);
 
 
 const PORT = process.env.PORT || 4000;
+
+mongoose.connect(process.env.API_DB_CONNECTION_URL, (err) => {
+    console.log(`====== Connected to database successfuly ===========`)
+    console.log(err)
+}) // connect to our mongoDB database //TODO: !AA: Secure the DB with authentication keys
+
+require('./modules/shared/services/websockets/init')(server)
 
 app.all('/*', (req, res, next) => {
     // CORS headers - Set custom headers for CORS
