@@ -1,8 +1,8 @@
 const {
   articleService,
   videoService,
+  translationService,
 } = require("../shared/services");
-const { translationService } = require('./services')
 
 let translationWorker;
 const TRANSLATE_ARTICLE_TEXT_QUEUE = "TRANSLATE_ARTICLE_TEXT_QUEUE";

@@ -51,7 +51,6 @@ function generateZipFile(zipFileName, data) {
 }
 function init(channel) {
   rabbitmqChannel = channel;
-  rabbitmqChannel.prefetch(1);
 
   rabbitmqChannel.assertQueue(
     queues.BURN_ARTICLE_TRANSLATION_VIDEO_SUBTITLE_AND_SIGNLANGUAGE_FINISH,

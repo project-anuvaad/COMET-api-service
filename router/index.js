@@ -46,6 +46,7 @@ module.exports = (app) => {
       if (err) {
           throw err;
       }
+      channel.prefetch(5, false)
       rabbitmqChannel = channel;
       channel.on('error', (err) => {
           console.log('RABBITMQ ERROR', err)
@@ -216,6 +217,10 @@ module.exports = (app) => {
               })
           })
       } else {
+        const whatsappBotKey = req.headers['vw-x-whatsapp-bot-key']
+        if (whatsappBotKey && whatsappBotKey === process.env.WHATSAPP_BOT_API_KEY) {
+          return next();
+        }
         // next();
         return res.status(401).send('Unauthorized');
       }

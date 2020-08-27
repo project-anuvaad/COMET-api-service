@@ -12,9 +12,9 @@ const {
   organizationService,
   authService,
   emailService,
+  textToSpeechService
 } = require("../shared/services");
 
-const { textToSpeechService } = require('./services')
 
 class TranslationService {
   constructor({ workers }) {

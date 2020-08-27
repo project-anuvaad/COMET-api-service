@@ -23,7 +23,7 @@ app.all('/*', (req, res, next) => {
     // CORS headers - Set custom headers for CORS
     res.header('Access-Control-Allow-Origin', '*'); // restrict it to the required domain
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token, vw-x-user-api-key-secret, vw-x-user-api-key, X-Vw-Anonymous-Id, X-Key, Cache-Control, X-Requested-With');
+    res.header('Access-Control-Allow-Headers', 'Content-type,Accept,vw-x-whatsapp-bot-key,X-Access-Token, vw-x-user-api-key-secret, vw-x-user-api-key, X-Vw-Anonymous-Id, X-Key, Cache-Control, X-Requested-With');
     if (req.method === 'OPTIONS') {
         res.status(200).end();
     } else {

@@ -11,11 +11,12 @@ module.exports = {
     organizationService: require('./organization'),
     socketConnectionService: require('./socketConnection'),
     subtitlesService: require('./subtitles'),
-    // translationService: require('./translation'),
+    translationService: require('./translation'),
     translationExportService: require('./translationExport'),
     userService: require('./user'),
     videoService: require('./video'),
     videoTutorialContributionService: require('./videoTutorialContribution'),
     websocketsService: require('./websockets'),
-    storageService: require('./storage')
+    storageService: require('./storage'),
+    textToSpeechService: require('./textToSpeech'),
 }

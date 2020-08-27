@@ -5,6 +5,7 @@ const middlewares = require('./middlewares');
 const mount = function (router) {
     // Define module routes here
     router.get('/whatsapp-bot', controller.getArticleForWhatsApp);
+    router.get('/count', controller.getArticlesCount)
     router.get('/by_video_id', controller.getByVideoId);
     router.get('/translations', controller.getArticlesTranslations);
 

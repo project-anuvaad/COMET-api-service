@@ -11,7 +11,6 @@ let rabbitmqChannel;
 
 function init(channel) {
     rabbitmqChannel = channel;
-    rabbitmqChannel.prefetch(1);
     rabbitmqChannel.assertQueue(queues.PROCESS_NOISECANCELLATIONVIDEO_AUDIO_FINISHED_QUEUE, { durable: true });
     rabbitmqChannel.consume(queues.PROCESS_NOISECANCELLATIONVIDEO_AUDIO_FINISHED_QUEUE, onProcessNoiseCancellationFinish, { noAck: false });
 }

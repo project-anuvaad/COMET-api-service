@@ -19,6 +19,7 @@
     "@google-cloud/text-to-speech": "^1.4.0",
     "@google-cloud/translate": "^4.1.2",
     "@videowiki/services": "^1.3.0",
+    "@videowiki/vendors": "^1.0.0",
     "@videowiki/workers": "^2.1.0",
     "amqplib": "^0.5.3",
     "archiver": "^4.0.1",
@@ -47,12 +48,12 @@
     "randomstring": "^1.1.5",
     "request": "^2.88.2",
     "sha256": "^0.2.0",
-    "subtitle": "^2.0.3",
-    "superagent": "^5.3.1",
-    "superagent-debugger": "^1.2.9",
     "socket.io": "^2.3.0",
     "socket.io-emitter": "^3.1.1",
     "socket.io-redis": "^5.2.0",
+    "subtitle": "^2.0.3",
+    "superagent": "^5.3.1",
+    "superagent-debugger": "^1.2.9",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

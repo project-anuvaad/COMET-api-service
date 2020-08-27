@@ -1753,6 +1753,26 @@ const controller = {
                 .catch(console.error)
             })
             .catch(console.error)
+    },
+    getArticlesCount: function(req, res) {
+        const query = req.query;
+        Object.keys(query).forEach((key) => {
+            if (key && key.indexOf && key.indexOf('$') === 0) {
+                const val = query[key];
+                query[key] = [];
+                Object.keys(val).forEach((subKey) => {
+                    val[subKey].forEach(subVal => {
+                        query[key].push({ [subKey]: subVal })
+                    })
+                })
+            }
+        })
+        Article.count(query)
+        .then(count => res.json(count))
+        .catch(err => {
+            console.log(err);
+            return res.status(400).send(err.message)
+        })
     }
 }
 
