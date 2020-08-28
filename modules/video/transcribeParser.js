@@ -4,7 +4,7 @@ function isItemInContent(start_time, end_time, item) {
     return parseFloat(item.start_time) >= parseFloat(start_time) && parseFloat(item.end_time) <= parseFloat(end_time);
 }
 
-function parseTranscription(transcription, subslides ) {
+function parseTranscription(transcription, subslides) {
     const { results } = transcription;
     const { items } = results;
     const slidesContent = [];

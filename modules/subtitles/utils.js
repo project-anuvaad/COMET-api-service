@@ -148,7 +148,7 @@ module.exports = {
               const prevSubtitle = subtitles.subtitles.find(s => s.position === parseInt(subtitlePosition) - 1);
               const nextSubtitle = subtitles.subtitles.find(s => s.position === parseInt(subtitlePosition) + 1);
               if (key === 'startTime') {
-                if (changes[key] >= subtitleItem.endTime) {
+                if (changes[key] >= (changes['endTime'] || subtitleItem.endTime)) {
                   throw new Error('Start time cannot be larger than end time');
                 }
                 if (!prevSubtitle && changes[key] < 0) {
@@ -157,7 +157,7 @@ module.exports = {
                   changes[key] = prevSubtitle.endTime;
                 }
               } else if (key === 'endTime') {
-                if (changes[key] <= subtitleItem.startTime) {
+                if (changes[key] <= (changes['startTime'] || subtitleItem.startTime)) {
                   throw new Error('End time cannot be less than start time');
                 }
                 if (nextSubtitle && changes[key] > nextSubtitle.startTime) {

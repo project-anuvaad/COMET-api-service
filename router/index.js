@@ -58,40 +58,40 @@ module.exports = (app) => {
       })
   // Decode uri component for all params in GET requests
   app.get('/health', (req, res) => {
-    const envVars = [
-        { SECRET_STRING },
-        { USER_SERVICE_API_ROOT },
-        { APIKEY_SERVICE_API_ROOT },
-        { AUTH_SERVICE_API_ROOT },
-        { INVITATION_RESPONSE_API_SERVICE_API_ROOT },
-        { VIDEO_TUTORIAL_CONTRIBUTION_API_SERVICE_API_ROOT },
-        { FRONTEND_HOST_NAME },
-        { VIDEO_API_SERVICE_API_ROOT },
-        { USER_API_SERVICE_API_ROOT },
-        { ARTICLE_API_SERVICE_API_ROOT },
-        { TRANSLATION_API_SERVICE_API_ROOT },
-        { TRANSLATION_EXPORT_API_SERVICE_API_ROOT },
-        { COMMENT_API_SERVICE_API_ROOT },
-        { ORGANIZATION_API_SERVICE_API_ROOT },
-        { NOTIFICATION_API_SERVICE_API_ROOT },
-        { SUBTITLES_API_SERVICE_API_ROOT },
-        { NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT },
-        { APIKEY_API_SERVICE_API_ROOT },
-        { NOISE_CANCELLATION_API_SERVICE_API_ROOT },
-        { FOLDER_API_SERVICE_API_ROOT },
-    ];
-    const unavailableKeys = [];
-    for (let i = 0; i < envVars.length; i++) {
-      let envVar = envVars[i];
-      Object.keys(envVar).forEach(key => {
-        if (!envVar[key]) {
-          unavailableKeys.push(key);
-        }
-      })
-    }
-    if (unavailableKeys.length > 0) {
-      return res.status(503).send('The following environment variables are not properly set ' + unavailableKeys.join(', '))
-    }
+    // const envVars = [
+    //     { SECRET_STRING },
+    //     { USER_SERVICE_API_ROOT },
+    //     { APIKEY_SERVICE_API_ROOT },
+    //     { AUTH_SERVICE_API_ROOT },
+    //     { INVITATION_RESPONSE_API_SERVICE_API_ROOT },
+    //     { VIDEO_TUTORIAL_CONTRIBUTION_API_SERVICE_API_ROOT },
+    //     { FRONTEND_HOST_NAME },
+    //     { VIDEO_API_SERVICE_API_ROOT },
+    //     { USER_API_SERVICE_API_ROOT },
+    //     { ARTICLE_API_SERVICE_API_ROOT },
+    //     { TRANSLATION_API_SERVICE_API_ROOT },
+    //     { TRANSLATION_EXPORT_API_SERVICE_API_ROOT },
+    //     { COMMENT_API_SERVICE_API_ROOT },
+    //     { ORGANIZATION_API_SERVICE_API_ROOT },
+    //     { NOTIFICATION_API_SERVICE_API_ROOT },
+    //     { SUBTITLES_API_SERVICE_API_ROOT },
+    //     { NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT },
+    //     { APIKEY_API_SERVICE_API_ROOT },
+    //     { NOISE_CANCELLATION_API_SERVICE_API_ROOT },
+    //     { FOLDER_API_SERVICE_API_ROOT },
+    // ];
+    // const unavailableKeys = [];
+    // for (let i = 0; i < envVars.length; i++) {
+    //   let envVar = envVars[i];
+    //   Object.keys(envVar).forEach(key => {
+    //     if (!envVar[key]) {
+    //       unavailableKeys.push(key);
+    //     }
+    //   })
+    // }
+    // if (unavailableKeys.length > 0) {
+    //   return res.status(503).send('The following environment variables are not properly set ' + unavailableKeys.join(', '))
+    // }
     return res.status(200).send('OK');
   })
   app.get('*', (req, res, next) => {

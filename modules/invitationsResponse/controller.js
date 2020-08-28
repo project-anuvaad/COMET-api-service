@@ -20,6 +20,9 @@ const controller = {
             if (!userDoc) throw new Error('Invalid user');
             return new Promise((resolve, reject) => {
                 user = userDoc;
+                if (user.toObject) {
+                    user = user.toObject();
+                }
                 
                 User.find({ _id: user._id })
                 .select('+organizationRoles.inviteToken')

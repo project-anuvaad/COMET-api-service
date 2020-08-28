@@ -357,11 +357,9 @@ class TranslationService {
         })
         .then((org) => {
           organization = org;
-
           const fetchUserFuncArray = [];
-          console.log(article[usersProperty]);
           article[usersProperty].forEach((userId) => {
-            if (typeof userId === "object") {
+            if (typeof userId === "object" && userId.user) {
               userId = userId.user;
             }
             fetchUserFuncArray.push((cb) => {

@@ -21,7 +21,7 @@ build-master:
     - apk upgrade -f
     - curl -o build.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/build.sh
     - chmod +X build.sh
-    - source build.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service
+    - source build.sh $AWS_ECR_ACCOUNT_URL videowiki api-service
   only:
     - master
 
@@ -37,7 +37,7 @@ deploy-production:
     - apk upgrade -f
     - curl -o deploy.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/deploy.sh
     - chmod +X deploy.sh
-    - source deploy.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service 
+    - source deploy.sh $AWS_ECR_ACCOUNT_URL videowiki api-service 
   when: manual
   only:
     - master
@@ -53,7 +53,7 @@ release-version:
     - apk upgrade -f
     - curl -o release.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/release.sh
     - chmod +X release.sh
-    - source release.sh $AWS_ECR_ACCOUNT_URL videowiki api-gateway-service $RELEASE_VERSION_NUMBER
+    - source release.sh $AWS_ECR_ACCOUNT_URL videowiki api-service $RELEASE_VERSION_NUMBER
   when: manual
   only:
     - master

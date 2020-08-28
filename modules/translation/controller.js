@@ -867,6 +867,9 @@ const controller = ({ workers }) => {
         .then((a) => {
           if (!a) throw new Error("Invalid article id " + articleId);
           article = a;
+          if (article.toObject) {
+            article = article.toObject();
+          }
           const slide = article.slides.find(
             (s) => s.position === parseInt(slidePosition)
           );
@@ -1299,6 +1302,9 @@ const controller = ({ workers }) => {
             const updateSpeedFuncArray = [];
             if (!article) {
               throw new Error("Invalid article id");
+            }
+            if (article.toObject) {
+              article = article.toObject();
             }
             let speedFunc;
             if (article.tts) {

@@ -98,6 +98,9 @@ module.exports = ({ workers }) => {
           return articleService.findById(articleId);
         })
         .then((a) => {
+          if (a.toObject) {
+            a = a.toObject();
+          }
           const subslides = a.slides.reduce((acc, s) => {
             const filteredContent = s.content.filter(
               (ss) =>

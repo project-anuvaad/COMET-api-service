@@ -589,6 +589,9 @@ const controller = ({ workers }) => {
       Video.findById(id)
         .then((videoDoc) => {
           video = videoDoc.toObject();
+          if (video.status === 'uploaded') {
+            throw new Error('Cannot assign users before automated video breaking is started')
+          }
           if (reviewers && reviewers.length > 0) {
             const oldReviewers = video.reviewers.map((r) => r.toString());
             reviewers.forEach((reviewer) => {
@@ -694,6 +697,9 @@ const controller = ({ workers }) => {
       Video.findById(id)
         .then((videoDoc) => {
           video = videoDoc.toObject();
+          if (video.status === 'uploaded') {
+            throw new Error('Cannot assign users before automated video breaking is started')
+          }
           if (verifiers && verifiers.length > 0) {
             const oldVerifiers = video.verifiers.map((r) => r && r.toString());
             verifiers.forEach((reviewer) => {
@@ -1619,6 +1625,9 @@ const controller = ({ workers }) => {
               if (!a || a.length === 0) throw new Error("Invalid article");
               // Sort the article's slides/subslides based on startTime before sending to the exporter
               article = a[0];
+              if (article.toObject) {
+                article = article.toObject();
+              }
               const { slides } = article;
               slides.forEach((slide) => {
                 slide.content = slide.content.sort(

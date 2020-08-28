@@ -16,7 +16,7 @@ class NotificationService extends BaseService {
         .then((n) => {
           notificationDoc = n.toObject();
           if (email) {
-            this.websockets.emitEvent({
+            websockets.emitEvent({
               email,
               event: "NEW_NOTIFICATION",
               data: { notification: notificationDoc },

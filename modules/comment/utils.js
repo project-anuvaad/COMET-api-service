@@ -3,9 +3,13 @@ function showMoreText(text, length) {
   return text.length > length ? `${text.substr(0, length)} ...` : text;
 }
 
-function getSlideIndex(article, slidePosition, subslidePosition) {
+function getSlideIndex(a, slidePosition, subslidePosition) {
+  let article = a;
   slidePosition = parseInt(slidePosition);
   subslidePosition = parseInt(subslidePosition);
+  if (article.toObject) {
+    article = article.toObject()
+  }
   
   const slidesComments = article.slides
       .reduce((acc, s) => acc.concat(s.content.map((sub) => ({ ...sub, slidePosition: s.position }))), [])

@@ -1,5 +1,5 @@
 FROM node:10.21.0-alpine3.11
-WORKDIR /api-gateway-service
+WORKDIR /api-service
 
 COPY . .
 RUN npm install

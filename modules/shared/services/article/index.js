@@ -78,14 +78,14 @@ class ArticleService extends BaseService {
                         const nextItem = subslides[itemIndex + 1];
 
                         if (key === 'startTime') {
-                            if (changes[key] > subslides[itemIndex].endTime) {
+                            if (changes[key] > (changes['endTime'] || subslides[itemIndex].endTime)) {
                                 throw new Error('Start time cannot be larger than end time');
                             }
                             if (prevItem && changes[key] < prevItem.endTime) {
                                 changes[key] = prevItem.endTime;
                             }
                         } else if (key === 'endTime') {
-                            if (changes[key] < subslides[itemIndex].startTime) {
+                            if (changes[key] < (changes['startTime'] || subslides[itemIndex].startTime)) {
                                 throw new Error('End time cannot be less than start time');
                             }
                             if (nextItem && changes[key] > nextItem.startTime) {

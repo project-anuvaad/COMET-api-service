@@ -396,6 +396,9 @@ function onWhatsappTranslationStarted(msg) {
         articleService
           .cloneArticle(translationArticle._id)
           .then((clonedArticle) => {
+            if (clonedArticle.toObject) {
+              clonedArticle = clonedArticle.toObject();
+            }
             clonedArticle.slides.forEach((slide) => {
               slide.content.forEach((subslide) => {
                 if (

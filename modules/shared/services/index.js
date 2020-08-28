@@ -4,7 +4,7 @@ module.exports = {
     articleService: require('./article'),
     authService: require('./auth'),
     commentService: require('./comment'),
-    emailService: require('./email'),
+    emailService: require('./email')(),
     folderService: require('./folder'),
     noiseCancellationVideoService: require('./noiseCancellationVideo'),
     notificationService: require('./notification'),
