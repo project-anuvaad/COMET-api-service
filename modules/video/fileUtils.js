@@ -23,10 +23,8 @@ function getFileDuration(url) {
             return musicMetadata.parseFile(filePath)
         })
         .then((md) => {
-            console.log(md)
             resolve(md.format.duration);
             fs.unlink(filePath, (e) => {
-                console.log('removed file', e);
             })
         })
         .catch(reject)

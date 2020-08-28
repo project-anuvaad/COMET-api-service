@@ -24,6 +24,7 @@ const VW_SUPER_TRANSCRIBERS_EMAILS = process.env.VW_SUPER_TRANSCRIBERS_EMAILS
 
 const fileUtils = require("./fileUtils");
 const { notifyWhatsappVideoAvailableToCut } = require("./rabbitmqHandlers");
+const utils = require("../translation/utils");
 const VEHDI_ORG_ID = "5dd23585b4703d001108bbb1";
 const SILENCE_THREASHOLD = 0.1; // silence threashold in seconds
 
@@ -41,6 +42,7 @@ const controller = ({ workers }) => {
     notifyUserAITranscriptionFinished,
     generateOriginalArticle,
     applySubtitlesOnArticle,
+    startVideoAutomatedCutting,
   } = require("./utils")({ workers });
 
   return {
@@ -118,7 +120,6 @@ const controller = ({ workers }) => {
       if (organization) {
         videoData.organization = organization;
       }
-      console.log("before upload");
       Video.create(videoData)
         .then((doc) => {
           video = doc.toObject();
@@ -130,7 +131,6 @@ const controller = ({ workers }) => {
           return Promise.reject();
         })
         .then((result) => {
-          console.log(" =============== uploaded ====================");
           fs.unlink(file.path, () => {});
           const { url, data } = result;
           const Key = data.Key;
@@ -590,7 +590,13 @@ const controller = ({ workers }) => {
         .then((videoDoc) => {
           video = videoDoc.toObject();
           if (video.status === 'uploaded') {
-            throw new Error('Cannot assign users before automated video breaking is started')
+            startVideoAutomatedCutting(id, req.user)
+            .then(() => {
+              console.log('started automated cutting', id)
+            })
+            .catch(err => {
+              console.log('error starting automated cutting', err);
+            })
           }
           if (reviewers && reviewers.length > 0) {
             const oldReviewers = video.reviewers.map((r) => r.toString());
@@ -698,7 +704,13 @@ const controller = ({ workers }) => {
         .then((videoDoc) => {
           video = videoDoc.toObject();
           if (video.status === 'uploaded') {
-            throw new Error('Cannot assign users before automated video breaking is started')
+            startVideoAutomatedCutting(id, req.user)
+            .then(() => {
+              console.log('started automated cutting', id)
+            })
+            .catch(err => {
+              console.log('error starting automated cutting', err);
+            })
           }
           if (verifiers && verifiers.length > 0) {
             const oldVerifiers = video.verifiers.map((r) => r && r.toString());

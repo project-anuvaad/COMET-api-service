@@ -1,7 +1,7 @@
 const async = require("async");
 const Video = require("../shared/models").Video;
 const { exec } = require("child_process");
-const path = require('path');
+const path = require("path");
 const VIDEOWIKI_WHATSAPP_NUMBER = process.env.VIDEOWIKI_WHATSAPP_NUMBER;
 const fs = require("fs");
 
@@ -19,9 +19,10 @@ const {
   supportedTranscribeLangs,
   DEFAULT_SINGLESLIDE_ENDTIME,
 } = require("./constants");
+const { reject } = require("lodash");
 
 module.exports = ({ workers }) => {
-  const { transcriberWorker, whatsappBotWorker } = workers;
+  const { transcriberWorker, spleeterWorker, whatsappBotWorker } = workers;
 
   function downloadFile(url, targetPath) {
     return new Promise((resolve, reject) => {
@@ -55,7 +56,7 @@ module.exports = ({ workers }) => {
           return articleService.findById(articleId);
         })
         .then((article) => {
-          if (!article) throw new Error('Invalid article id ' + articleId);
+          if (!article) throw new Error("Invalid article id " + articleId);
 
           const slides = [];
           parsedSubtitles.forEach((subtitle, index) => {
@@ -63,7 +64,7 @@ module.exports = ({ workers }) => {
               position: index,
               content: [
                 {
-                  text: subtitle.content, 
+                  text: subtitle.content,
                   position: 0,
                   startTime: subtitle.startTime,
                   endTime: subtitle.endTime,
@@ -75,7 +76,7 @@ module.exports = ({ workers }) => {
               ],
             });
           });
-          articleService.updateById(articleId, { slides })
+          articleService.updateById(articleId, { slides });
         })
         .then(() => articleService.findById(articleId))
         .then(resolve)
@@ -90,9 +91,10 @@ module.exports = ({ workers }) => {
         articleId,
         transcriptionUrl
       );
-      const transcriptionPath = path.join(__dirname, `transcription-${Date.now()}.${transcriptionUrl
-        .split(".")
-        .pop()}`);
+      const transcriptionPath = path.join(
+        __dirname,
+        `transcription-${Date.now()}.${transcriptionUrl.split(".").pop()}`
+      );
       downloadFile(transcriptionUrl, transcriptionPath)
         .then(() => {
           return articleService.findById(articleId);
@@ -520,6 +522,104 @@ module.exports = ({ workers }) => {
       });
   }
 
+  function startVideoAutomatedCutting(id, user) {
+    return new Promise((resolve, reject) => {
+      Video.findById(id)
+        .then((videoDoc) => {
+          if (!videoDoc) throw new Error("Invalid video id");
+          video = videoDoc.toObject();
+          if (video.status !== "uploaded") {
+            throw new Error("This video is already being processed");
+          }
+          const initialSlide = {
+            position: 0,
+            content: [
+              {
+                text: "",
+                position: 0,
+                startTime: 0,
+                endTime: DEFAULT_SINGLESLIDE_ENDTIME / 1000,
+                speakerProfile: {
+                  speakerNumber: 1,
+                  speakerGender: "male",
+                },
+              },
+            ],
+          };
+          const newArticle = {
+            title: video.title,
+            version: 1,
+            slides: [initialSlide],
+            video: video._id,
+            numberOfSpeakers: video.numberOfSpeakers,
+            langCode: video.langCode,
+            speakersProfile: [
+              {
+                speakerNumber: 1,
+                speakerGender: "male",
+              },
+            ],
+            organization: video.organization,
+          };
+          articleService
+            .create(newArticle)
+            .then((newArticle) => {
+              article = newArticle;
+              const videoUpdate = {
+                status: "automated_cutting",
+                article: newArticle._id,
+                cuttingBy: "self",
+                cuttingRequestBy: user._id,
+              };
+              videoUpdate.cuttingStartTime = Date.now();
+              if (video.duration) {
+                videoUpdate.transcribeStartTime = Date.now();
+                if (
+                  supportedTranscribeLangs
+                    .map((l) => l.code)
+                    .indexOf(video.langCode) !== -1
+                ) {
+                  // transcribe end time is approx. 2 times the video duration
+                  videoUpdate.transcribeEndTime =
+                    Date.now() + video.duration * 1000 * 2;
+                  videoUpdate.AITranscriptionLoading = true;
+                } else {
+                  videoUpdate.transcribeEndTime = Date.now();
+                }
+              }
+              if (video.duration) {
+                // cutting end time is approx 1/2 video duration + 1min
+                videoUpdate.cuttingEndTime =
+                  Date.now() + (video.duration / 2) * 1000 + 60 * 1000;
+              }
+              return Video.update({ _id: video._id }, { $set: videoUpdate });
+            })
+            .then(() => {
+              spleeterWorker.extractVideoVoice({
+                id: article._id,
+                url: video.url,
+              });
+              if (
+                supportedTranscribeLangs
+                  .map((l) => l.code)
+                  .indexOf(video.langCode) !== -1
+              ) {
+                transcriberWorker.transcribeVideo(
+                  genrateTranscribeMessage(video)
+                );
+              }
+              resolve();
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+
   function generateWhatsappTranscribeLink(videoId) {
     return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
   }
@@ -547,6 +647,7 @@ module.exports = ({ workers }) => {
     generateWhatsappTranslateLink,
     getWhatsappNotifyOnProofreadingReady,
     notifyUserAITranscriptionFinished,
+    startVideoAutomatedCutting,
     generateOriginalArticle,
     applySubtitlesOnArticle,
   };
