@@ -24,8 +24,8 @@
     <br>
     <%= content %>
     <br>
-    <% if (typeof extraContent === 'text') { %>
-      <small><strong><%= extraContent %></strong></small>
+    <% if (typeof extraContent === 'string') { %>
+    <small><strong><%= extraContent %></strong></small>
     <% } %>
   </td>
  </tr>
@@ -63,7 +63,24 @@
     text-decoration: none;
     width: auto!important;" >Decline</a>
 	<p>
-	
+
+ <% if (typeof(whatsappUrl) === 'string' && whatsappUrl) { %>
+      <br />
+      <a href="<%= whatsappUrl %>" target="_blank" style="background: #28a73f linear-gradient(-180deg,#34d058 0%,#28a745 90%);
+        border-radius: 5px;
+        color: #fff;
+        display: inline-block;
+        font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: normal;
+        margin: 0 auto;
+        padding: 6px 12px;
+        text-align: center;
+        text-decoration: none;
+        width: auto!important;" ><%= whatsappButtonTitle %></a>
+
+    <% } %>	
 	<br>
 
   </td>
@@ -91,7 +108,7 @@
     font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
     font-size: 14px;
     font-weight: normal;
-    line-height: 20px;" >Copyright © 2019 VideoWiki. All rights reserved.</p>
+    line-height: 20px;" >Copyright © 2020 VideoWiki. All rights reserved.</p>
   </td>
  </tr>
 </table>

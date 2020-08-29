@@ -23,6 +23,10 @@
     line-height: 20px;">
     <br>
     <%= content %>
+    <% if (typeof extraContent === 'string') { %>
+      <br>
+      <small><strong><%= extraContent %></strong></small
+    <% } %>
   </td>
  </tr>
  <tr>
@@ -44,7 +48,22 @@
     text-align: center;
     text-decoration: none;
     width: auto!important;" ><%= buttonTitle %></a>
-	
+    <% if (typeof(whatsappUrl) === 'string' && whatsappUrl) { %>
+      <a href="<%= whatsappUrl %>" target="_blank" style="background: #28a73f linear-gradient(-180deg,#34d058 0%,#28a745 90%);
+        border-radius: 5px;
+        color: #fff;
+        display: inline-block;
+        font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: normal;
+        margin: 0 auto;
+        padding: 6px 12px;
+        text-align: center;
+        text-decoration: none;
+        width: auto!important;" ><%= whatsappButtonTitle %></a>
+
+    <% } %>
 	<p>
 	
 	<br>
@@ -69,7 +88,7 @@
     font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
     font-size: 14px;
     font-weight: normal;
-    line-height: 20px;" >Copyright © 2019 VideoWiki. All rights reserved.</p>
+    line-height: 20px;" >Copyright © 2020 VideoWiki. All rights reserved.</p>
   </td>
  </tr>
 </table>

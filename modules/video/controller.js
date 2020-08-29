@@ -24,7 +24,6 @@ const VW_SUPER_TRANSCRIBERS_EMAILS = process.env.VW_SUPER_TRANSCRIBERS_EMAILS
 
 const fileUtils = require("./fileUtils");
 const { notifyWhatsappVideoAvailableToCut } = require("./rabbitmqHandlers");
-const utils = require("../translation/utils");
 const VEHDI_ORG_ID = "5dd23585b4703d001108bbb1";
 const SILENCE_THREASHOLD = 0.1; // silence threashold in seconds
 

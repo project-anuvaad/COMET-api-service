@@ -4,8 +4,10 @@ const jwt = require('jsonwebtoken');
 const uuid = require('uuid').v4;
 const sha256 = require('sha256');
 
-const emailService = require('./services/email');
-const storageService = require('../shared/services/storage');
+const {
+    storageService,
+    emailService,
+} = require('../shared/services')
 
 const userService = require('../shared/services/user');
 const organizationService = require('../shared/services/organization');

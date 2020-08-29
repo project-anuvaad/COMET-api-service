@@ -28,7 +28,8 @@ const {
   FOLDER_API_SERVICE_API_ROOT,
 } = process.env;
 
-const userService = require('../modules/shared/services/user')
+const userService = require('../modules/shared/services/user');
+const { ApiKey } = require('../modules/shared/models');
 
 const PUBLIC_ROUTES = [
   /^\/api\/organization\/(.)*\/invitations\/respond$/,
@@ -163,17 +164,17 @@ module.exports = (app) => {
                   const apiKey = apiKeys.find(k => k.organization.toString() === role.organization._id.toString());
                   if (!apiKey || !apiKey.key) {
                     apiKeyService.generateApiKey().then(key => {
-                      return apiKeyService.create({
+                      return ApiKey.updateOne({
                         organization: role.organization._id,
                         user: userData._id,
+                        userKey: true,
+                       }, { $set: {
                         key,
                         origins: [role.organization.name.replace(/\s/g, '-').toLowerCase() + '.' + process.env.FRONTEND_HOST_NAME],
                         active: true,
-                        userKey: true,
-                      })
+                       }},{ upsert: true })
                     })
-                      .then((apiKey) => {
-                        console.log('created api key', apiKey)
+                      .then(() => {
                       })
                       .catch(err => {
                         console.log('error creating api key', err)

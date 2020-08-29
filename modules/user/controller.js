@@ -33,9 +33,13 @@ const controller = {
         user = users[0];
         return authService.encryptPassword(oldPassword);
       })
-      .then((encryptedPassword) => {
-        if (user.password !== encryptedPassword)
+      .then((encryptedOldPassword) => {
+        if (user.password !== encryptedOldPassword)
           throw new Error("Invalid old password");
+
+          return authService.encryptPassword(password)
+      })
+      .then((encryptedPassword) => {
         return User.update(
           { _id: user._id },
           { $set: { password: encryptedPassword, passwordSet: true } }
