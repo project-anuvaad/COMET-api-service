@@ -1459,7 +1459,7 @@ const controller = {
 
         if (queryKeys.indexOf('search') !== -1) {
             if (search) {
-                query.title = search;
+                query.title = new RegExp(search, 'ig');
             }
             delete req.query.search;
         }
@@ -1598,7 +1598,7 @@ const controller = {
         }
 
         if (queryKeys.indexOf('search') !== -1) {
-            query.title = search;
+            query.title = new RegExp(search, 'ig');
             delete req.query.search;
         }
 
