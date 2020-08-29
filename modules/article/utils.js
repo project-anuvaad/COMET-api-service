@@ -490,19 +490,31 @@ function getArticleWithRelatedUsers(articleId) {
 } 
 
 function generateWhatsappTranscribeLink(videoId) {
+  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+      return '';
+  }
   return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
 }
 
 function generateWhatsappProofreadLink(videoId) {
+  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+      return '';
+  }
   return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
 }
 
 
 function generateWhatsappTranslateLink(videoId, langTo) {
+  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+      return '';
+  }
   return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
 }
 
 function getWhatsappNotifyOnProofreadingReady(videoId) {
+  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+      return '';
+  }
   return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
 }
 module.exports = {
