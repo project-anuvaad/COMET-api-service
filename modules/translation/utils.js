@@ -375,7 +375,7 @@ class TranslationService {
             });
           });
 
-          async.parallelLimit(fetchUserFuncArray, 2, (err, users) => {
+          async.parallelLimit(fetchUserFuncArray, 10, (err, users) => {
             if (err) return reject(err);
             users = users.filter((u) => u);
             const emailUsersFuncArray = [];

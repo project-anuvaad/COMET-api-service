@@ -312,7 +312,7 @@ module.exports = ({ workers }) => {
             }
           });
 
-          async.parallelLimit(fetchUsersFuncArray, 5, () => {
+          async.parallelLimit(fetchUsersFuncArray, 10, () => {
             return resolve(video);
           });
         })

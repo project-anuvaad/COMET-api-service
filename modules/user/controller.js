@@ -5,13 +5,19 @@ const utils = require("./utils");
 const VW_SUPER_TRANSCRIBERS_EMAILS = process.env.VW_SUPER_TRANSCRIBERS_EMAILS && process.env.VW_SUPER_TRANSCRIBERS_EMAILS.split(',').length > 0 ? process.env.VW_SUPER_TRANSCRIBERS_EMAILS.split(',').map(r => r.trim()).filter(r => r) : [];
 
 VW_SUPER_TRANSCRIBERS_EMAILS.forEach(email => {
-    User.findOneAndUpdate({ email }, { $set: { superTranscriber: true } })
-        .then(() => {
-            console.log(email, ' is set as super transcriber')
-        })
-        .catch(err => {
-            console.log(err)
-        })
+  User.findOne({ email })
+  .then(user => {
+    if (!user) {
+      return Promise.resolve();
+    }
+    return User.findOneAndUpdate({ email }, { $set: { superTranscriber: true } })
+  })
+  .then(() => {
+      console.log(email, ' is set as super transcriber')
+  })
+  .catch(err => {
+      console.log(err)
+  })
 })
 
 

@@ -67,7 +67,7 @@ function getTranslationExportWithUsersFields(translationExportId) {
           }
 
         })
-        async.parallelLimit(fetchUsersFuncArray, 2, () => {
+        async.parallelLimit(fetchUsersFuncArray, 10, () => {
           return resolve(translationExport);
         })
       })

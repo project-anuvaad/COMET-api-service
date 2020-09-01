@@ -968,7 +968,7 @@ const controller = ({ workers }) => {
                   return cb();
                 });
             });
-            async.parallelLimit(fetchVideosFuncArray, 2, () => {
+            async.parallelLimit(fetchVideosFuncArray, 10, () => {
               return resolve(videos);
             });
           });
@@ -1607,7 +1607,7 @@ const controller = ({ workers }) => {
                               });
                           });
                         });
-                        async.parallelLimit(updateFuncArray, 5, () => {
+                        async.parallelLimit(updateFuncArray, 10, () => {
                           notifyUserAITranscriptionFinished(article._id);
                           resolve();
                         });

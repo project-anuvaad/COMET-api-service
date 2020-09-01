@@ -57,7 +57,7 @@ const controller = ({ workers }) => {
 
           async.parallelLimit(
             fetchUsersInfoFuncArray,
-            2,
+            10,
             (err, translationExports) => {
               return res.json({
                 translationExports,

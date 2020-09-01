@@ -65,7 +65,7 @@ const controller = {
                     })
                 })
             })
-            async.parallelLimit(fetchUsersFuncArray, 5, () => {
+            async.parallelLimit(fetchUsersFuncArray, 10, () => {
                 return res.json({ comments: slidesComments });
             })
         })

@@ -90,7 +90,7 @@ module.exports = ({ workers }) => {
               });
             }
           });
-          async.parallelLimit(fetchUsersFuncArray, 2, () => {
+          async.parallelLimit(fetchUsersFuncArray, 10, () => {
             return resolve(translationExport);
           });
         })
@@ -289,7 +289,7 @@ module.exports = ({ workers }) => {
           }
         });
       });
-      async.parallelLimit(processAudioFuncArray, 2, (err) => {
+      async.parallelLimit(processAudioFuncArray, 10, (err) => {
         if (err) return reject(err);
         return resolve();
       });

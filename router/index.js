@@ -383,30 +383,3 @@ function createProxy(TARGET) {
   console.log('creating proxy for', TARGET)
   return require('express-http-proxy')(TARGET, proxyParams);
 }
-
-
-// const apiKeyVal = req.header('vw-x-user-api-key');
-// const apiKeySecretVal = req.header('vw-x-user-api-key-secret');
-
-// setTimeout(() => {
-//   const superagent = require('superagent');
-//   let superdebug = require('superagent-debugger');
-
-//   const fs = require('fs');
-//   [1,2,3,4,5,6,7,8,9,10].forEach((a) => {
-//     // [1].forEach(() => {
-
-//     superagent.post(`http://localhost:4000/api/noiseCancellation/audio`)
-//     .set('vw-x-user-api-key', 'fa2c4f2e-e415-44f5-8dc5-c2ac2ef6d59e-1587095552652')
-//     .set('vw-x-user-api-key-secret', '8d250fa7-c7eb-4117-995a-60a9154a40dc-1587095552652')
-//     .attach('file', fs.createReadStream('audio-930a4b9b-ac1a-4295-8707-50747400a6a2.mp3'))
-//     .use(superdebug.default(console.info))
-
-//     .then(res => {
-//       fs.writeFileSync('cleared2.mp3', res.body)
-//     })
-//     .catch(err => {
-//       console.log(err)
-//     })
-//   })
-// }, 2000);

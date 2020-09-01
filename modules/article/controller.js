@@ -125,7 +125,7 @@ const controller = {
                                         
                             })
                         })
-                        async.parallelLimit(fetchCommentFuncArray, 2, () => {
+                        async.parallelLimit(fetchCommentFuncArray, 10, () => {
                             return resolve(comments);
                         })
                     }
@@ -174,7 +174,7 @@ const controller = {
 
                 });
 
-                async.parallelLimit(fetchCommentUserFunArray, 5, (err) => {
+                async.parallelLimit(fetchCommentUserFunArray, 10, (err) => {
                     if (err) {
                         console.log(err);
                     }
@@ -541,7 +541,7 @@ const controller = {
                         })
                     });
 
-                    async.parallelLimit(fetchVerifiersFuncArray, 5, (err, data) => {
+                    async.parallelLimit(fetchVerifiersFuncArray, 10, (err, data) => {
                         video.verifiers = data;
                         resolve(video)
                     })
@@ -847,7 +847,7 @@ const controller = {
                         })
                     })
                 })
-                async.parallelLimit(removeNotiFuncArray, 2, () => {
+                async.parallelLimit(removeNotiFuncArray, 10, () => {
                     resolve();
                 })
             })
@@ -1001,7 +1001,7 @@ const controller = {
                         })
                     })
                 })
-                async.parallelLimit(removeNotiFuncArray, 2, () => {
+                async.parallelLimit(removeNotiFuncArray, 10, () => {
                     resolve();
                 })
             })
@@ -1314,7 +1314,7 @@ const controller = {
                         return cb()
                     })
                 })
-                async.parallelLimit(processArticleFuncArray, 2, () => {
+                async.parallelLimit(processArticleFuncArray, 10, () => {
                     // Remove slides from the returned object
                     articlesWithMetrics.forEach((am) => {
                         delete am.slides;

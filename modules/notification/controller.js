@@ -52,7 +52,7 @@ const controller = {
                     cb();
                 }
             })
-            async.parallelLimit(fetchFromFuncArray, 2, () => {
+            async.parallelLimit(fetchFromFuncArray, 10, () => {
                 return res.json({ notifications, pagesCount: Math.ceil(count/perPage) });
             })
         })

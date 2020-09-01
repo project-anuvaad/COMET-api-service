@@ -355,7 +355,7 @@ function getArticlesWithRelatedUsers(query) {
 
                 })
             })
-            async.parallelLimit(fetchArticlesFuncArray, 2, () => {
+            async.parallelLimit(fetchArticlesFuncArray, 10, () => {
                 resolve(articles)
             })
         })
@@ -392,7 +392,7 @@ function getArticleWithRelatedUsers(articleId) {
                         })
                     })
                 })
-                async.parallelLimit(fetchTextTransaltorsFuncArray, 2, () => {
+                async.parallelLimit(fetchTextTransaltorsFuncArray, 10, () => {
                     resolve();
                 })
             })
@@ -421,7 +421,7 @@ function getArticleWithRelatedUsers(articleId) {
                         })
                     })
                 })
-                async.parallelLimit(fetchTextTransaltorsFuncArray, 2, () => {
+                async.parallelLimit(fetchTextTransaltorsFuncArray, 10, () => {
                     resolve();
                 })
             })
@@ -450,7 +450,7 @@ function getArticleWithRelatedUsers(articleId) {
                         })
                     })
                 })
-                async.parallelLimit(fetchTextTransaltorsFuncArray, 2, () => {
+                async.parallelLimit(fetchTextTransaltorsFuncArray, 10, () => {
                     resolve();
                 })
             })
@@ -479,7 +479,7 @@ function getArticleWithRelatedUsers(articleId) {
                         })
                     })
                 })
-                async.parallelLimit(fetchTextTransaltorsFuncArray, 2, () => {
+                async.parallelLimit(fetchTextTransaltorsFuncArray, 10, () => {
                     resolve();
                 })
             })
