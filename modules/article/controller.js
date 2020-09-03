@@ -26,7 +26,7 @@ const {
     getArticlesWithRelatedUsers,
     getArticleWithRelatedUsers,
 } = require('./utils');
-const { Video } = require('../shared/models');
+const { Video, Comment } = require('../shared/models');
 
 const controller = {
     getArticles: function(req, res) {
@@ -97,7 +97,8 @@ const controller = {
                         const [ slidePosition, subslidePosition ] = slidesSubslidesPositions[0].split('-');
                         commentQuery['slidePosition'] = parseInt(slidePosition);
                         commentQuery['subslidePosition'] = parseInt(subslidePosition)
-                        return commentService.find(commentQuery)
+                        return Comment.find(commentQuery)
+                            .populate('user', '_id email firstname lastname')
                             .then(resolve)
                             .catch(reject)
                     } else {
@@ -111,10 +112,11 @@ const controller = {
                                 const [ slidePosition, subslidePosition ] = sb.split('-');
                                 commentQuery['slidePosition'] = parseInt(slidePosition);
                                 commentQuery['subslidePosition'] = parseInt(subslidePosition)
-                                commentService.find(commentQuery)
+                                Comment.find(commentQuery)
+                                .populate('user', '_id email firstname lastname')
                                     .then(commentsDocs => {
                                         commentsDocs.forEach(doc => {
-                                            comments.push(doc);
+                                            comments.push(doc.toObject());
                                         })
                                         cb();
                                     })
