@@ -1,12 +1,12 @@
-const folderHandler = require('../../dbHandlers/folder');
+const commentHandler = require('../../dbHandlers/comment');
 
 const BaseService = require('../BaseService');
 
-class FolderService extends BaseService {
+class commentService extends BaseService {
     constructor() {
-        super(folderHandler);
+        super(commentHandler);
     }
 }
 
 
-module.exports = new FolderService();
+module.exports = new commentService();
