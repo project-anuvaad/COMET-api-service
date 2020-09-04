@@ -4,28 +4,26 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 
 const apiKeyService = require('../modules/shared/services/apiKey');
+const storageService = require('../modules/shared/services/storage');
 
 const {
   SECRET_STRING,
-  USER_SERVICE_API_ROOT,
-  APIKEY_SERVICE_API_ROOT,
-  AUTH_SERVICE_API_ROOT,
-  INVITATION_RESPONSE_API_SERVICE_API_ROOT,
-  VIDEO_TUTORIAL_CONTRIBUTION_API_SERVICE_API_ROOT,
+  AWS_ACCESS_KEY_ID,
+  AWS_ACCESS_KEY_SECRET,
+  AWS_DEFAULT_REGION,
+  AWS_BUCKET_NAME,
+  MAILGUN_API_KEY,
+  MAILGUN_DOMAIN,
+  GOOGLE_CLOUD_PROJECT_ID,
+  GOOGLE_CLOUD_CLIENT_EMAIL,
+  GOOGLE_CLOUD_PRIVATE_KEY,
+  FRONTEND_HOST_URL,
   FRONTEND_HOST_NAME,
-  VIDEO_API_SERVICE_API_ROOT,
-  USER_API_SERVICE_API_ROOT,
-  ARTICLE_API_SERVICE_API_ROOT,
-  TRANSLATION_API_SERVICE_API_ROOT,
-  TRANSLATION_EXPORT_API_SERVICE_API_ROOT,
-  COMMENT_API_SERVICE_API_ROOT,
-  ORGANIZATION_API_SERVICE_API_ROOT,
-  NOTIFICATION_API_SERVICE_API_ROOT,
-  SUBTITLES_API_SERVICE_API_ROOT,
-  NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT,
-  APIKEY_API_SERVICE_API_ROOT,
-  NOISE_CANCELLATION_API_SERVICE_API_ROOT,
-  FOLDER_API_SERVICE_API_ROOT,
+  FRONTEND_HOST_PROTOCOL,
+  API_ROOT,
+  WEBSOCKET_SERVER_URL,
+  AUDIO_PROCESSOR_API_ROOT,
+  API_DB_CONNECTION_URL
 } = process.env;
 
 const userService = require('../modules/shared/services/user');
@@ -38,7 +36,7 @@ const PUBLIC_ROUTES = [
 ]
 
 module.exports = (app) => {
-   const rabbitmqService = require('../modules/shared/workers/vendors/rabbitmq');
+  const rabbitmqService = require('../modules/shared/workers/vendors/rabbitmq');
   const RABBITMQ_SERVER = process.env.RABBITMQ_SERVER;
   let rabbitmqChannel;
 
@@ -59,42 +57,50 @@ module.exports = (app) => {
       })
   // Decode uri component for all params in GET requests
   app.get('/health', (req, res) => {
-    // const envVars = [
-    //     { SECRET_STRING },
-    //     { USER_SERVICE_API_ROOT },
-    //     { APIKEY_SERVICE_API_ROOT },
-    //     { AUTH_SERVICE_API_ROOT },
-    //     { INVITATION_RESPONSE_API_SERVICE_API_ROOT },
-    //     { VIDEO_TUTORIAL_CONTRIBUTION_API_SERVICE_API_ROOT },
-    //     { FRONTEND_HOST_NAME },
-    //     { VIDEO_API_SERVICE_API_ROOT },
-    //     { USER_API_SERVICE_API_ROOT },
-    //     { ARTICLE_API_SERVICE_API_ROOT },
-    //     { TRANSLATION_API_SERVICE_API_ROOT },
-    //     { TRANSLATION_EXPORT_API_SERVICE_API_ROOT },
-    //     { COMMENT_API_SERVICE_API_ROOT },
-    //     { ORGANIZATION_API_SERVICE_API_ROOT },
-    //     { NOTIFICATION_API_SERVICE_API_ROOT },
-    //     { SUBTITLES_API_SERVICE_API_ROOT },
-    //     { NOISE_CANCELLATION_VIDEO_API_SERVICE_API_ROOT },
-    //     { APIKEY_API_SERVICE_API_ROOT },
-    //     { NOISE_CANCELLATION_API_SERVICE_API_ROOT },
-    //     { FOLDER_API_SERVICE_API_ROOT },
-    // ];
-    // const unavailableKeys = [];
-    // for (let i = 0; i < envVars.length; i++) {
-    //   let envVar = envVars[i];
-    //   Object.keys(envVar).forEach(key => {
-    //     if (!envVar[key]) {
-    //       unavailableKeys.push(key);
-    //     }
-    //   })
-    // }
-    // if (unavailableKeys.length > 0) {
-    //   return res.status(503).send('The following environment variables are not properly set ' + unavailableKeys.join(', '))
-    // }
-    return res.status(200).send('OK');
+    const envVars = [
+      { AWS_ACCESS_KEY_ID },
+      { AWS_ACCESS_KEY_SECRET },
+      { AWS_DEFAULT_REGION },
+      { AWS_BUCKET_NAME },
+      { MAILGUN_API_KEY },
+      { MAILGUN_DOMAIN },
+      { GOOGLE_CLOUD_PROJECT_ID },
+      { GOOGLE_CLOUD_CLIENT_EMAIL },
+      { GOOGLE_CLOUD_PRIVATE_KEY },
+      { FRONTEND_HOST_URL },
+      { FRONTEND_HOST_NAME },
+      { FRONTEND_HOST_PROTOCOL },
+      { API_ROOT },
+      { WEBSOCKET_SERVER_URL },
+      { AUDIO_PROCESSOR_API_ROOT },
+      { API_DB_CONNECTION_URL }
+    ];
+    const unavailableKeys = [];
+    for (let i = 0; i < envVars.length; i++) {
+      let envVar = envVars[i];
+      Object.keys(envVar).forEach(key => {
+        if (!envVar[key]) {
+          unavailableKeys.push(key);
+        }
+      })
+    }
+    if (unavailableKeys.length > 0) {
+      const msg =  'The following environment variables are not properly set ' + unavailableKeys.join(', ')
+      console.log(msg)
+      return res.status(503).send(msg)
+    }
+    storageService.getBucketLocation()
+    .then(() => {
+      return res.status(200).send('OK');
+    })
+    .catch(err => {
+      const msg = 'Invalid configuration for aws s3 bucket';
+      console.log(msg)
+      console.log(err)
+      return res.status(503).send(msg)
+    })
   })
+
   app.get('*', (req, res, next) => {
     if (req.query) {
       Object.keys(req.query).forEach((key) => {

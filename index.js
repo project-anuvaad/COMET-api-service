@@ -12,11 +12,17 @@ const server = require('http').Server(app);
 
 const PORT = process.env.PORT || 4000;
 
-mongoose.connect(process.env.API_DB_CONNECTION_URL, (err) => {
-    console.log(`====== Connected to database successfuly ===========`)
-    console.log(err)
-}) // connect to our mongoDB database //TODO: !AA: Secure the DB with authentication keys
-
+mongoose.connect(process.env.API_DB_CONNECTION_URL)
+.then(con => {
+    con.connection.on('disconnected', () => {
+        console.log('Database disconnected! shutting down service')
+        process.exit(1);
+    })
+})
+.catch(err => {
+    console.log(err);
+    process.exit(1);
+})
 require('./modules/shared/services/websockets/init')(server)
 
 app.all('/*', (req, res, next) => {
