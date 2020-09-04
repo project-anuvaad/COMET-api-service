@@ -42,6 +42,7 @@ const mount = function (router) {
   // router.post('/:organizationId/invitations/respond', controller.respondToInvitation)
   router.post(
     "/:organizationId/invitations/respondAuth",
+    middlewares.authorizeUser,
     controller.respondToInvitationAuth
   );
 
