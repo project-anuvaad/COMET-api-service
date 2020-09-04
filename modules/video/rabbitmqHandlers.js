@@ -389,17 +389,24 @@ function init({ channel, workers }) {
 
     function onTranscribeVideoFailed(msg) {
         const { videoId } = parseMessageContent(msg);
-        // Video.findByIdAndUpdate(videoId, { status: 'uploaded' })
-        // .then(() => Video.findById(videoId))
-        // .then((video) => {
-        //     websocketsService.emitEvent({ room: websocketsRooms.getOrganizationRoom(video.organization), event: websocketsEvents.VIDEO_TRANSCRIBED, data: video })
-        //     rabbitmqChannel.ack(msg);
-        // })
-        // .catch(err => {
-        //     console.log('error updating video stauts to failed', err);
-        //     rabbitmqChannel.ack(msg);
-        // })
-        rabbitmqChannel.ack(msg);
+        console.log('video transcribe failed', videoId)
+        Video.findByIdAndUpdate(videoId, { $set: { AITranscriptionLoading: false, transcribeEndTime: Date.now() }})
+        .then(() => Video.findById(videoId))
+        .then((video) => {
+            video = video.toObject();
+            if (video.status !== 'proofreading') {
+                return;
+            }
+            const event = { room: websocketsRooms.getOrganizationRoom(video.organization), event: `${websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH}/${video._id}`, data: video};
+            const event2 = { room: websocketsRooms.getOrganizationRoom(video.organization), event: `${websocketsEvents.AI_TRANSCRIBE_VIDEO_FINISH}`, data: video };
+            websocketsService.emitEvent(event)
+            websocketsService.emitEvent(event2)
+            rabbitmqChannel.ack(msg);
+        })
+        .catch(err => {
+            console.log('error updating video stauts to failed', err);
+            rabbitmqChannel.ack(msg);
+        })
     }
 
     function syncTranslationArticlesMediaWithOriginal(originalArticleId) {

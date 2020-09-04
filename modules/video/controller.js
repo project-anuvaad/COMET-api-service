@@ -1559,7 +1559,7 @@ const controller = ({ workers }) => {
                         } else {
                           resolve();
                         }
-                      } else if (clonedArticle) {
+                      } else if (clonedArticle && video.AITranscriptionLoading) {
                         const slides = article.slides.reduce((acc, s) => {
                           if (
                             s.content &&
@@ -1594,11 +1594,6 @@ const controller = ({ workers }) => {
                                 { AITranscriptionLoading: true }
                               )
                               .then(() => {
-                                console.log(
-                                  "AITranscriptionLoading",
-                                  subslide.slidePosition,
-                                  subslide.subslidePosition
-                                );
                                 cb();
                               })
                               .catch((err) => {
@@ -1608,12 +1603,19 @@ const controller = ({ workers }) => {
                           });
                         });
                         async.parallelLimit(updateFuncArray, 10, () => {
-                          notifyUserAITranscriptionFinished(article._id);
+                          // notifyUserAITranscriptionFinished(article._id);
                           resolve();
                         });
                       } else {
-                        notifyUserAITranscriptionFinished(article._id);
-                        resolve();
+                        Video.findByIdAndUpdate(id, { $set: { AITranscriptionLoading: false }})
+                        .then(() => {
+                          notifyUserAITranscriptionFinished(article._id);
+                          resolve();
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                          resolve()
+                        })
                       }
                     });
                   })
