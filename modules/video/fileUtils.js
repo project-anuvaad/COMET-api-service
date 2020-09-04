@@ -3,6 +3,7 @@ const fs = require('fs');
 const uuid = require('uuid').v4;
 const superagent = require('superagent');
 const { getAudioDurationInSeconds } = require('get-audio-duration')
+const { getVideoDurationInSeconds } = require('get-video-duration')
 const musicMetadata = require('music-metadata');
 
 function getAudioDuration(url) {
@@ -21,13 +22,29 @@ function getFileDuration(url) {
         downloadFile(url, filePath)
         .then(() => {
             return musicMetadata.parseFile(filePath)
+                .then((md) => {
+                    resolve(md.format.duration);
+                    fs.unlink(filePath, (e) => {
+                    })
+                })
+                .catch(err => {
+                    // Try with getVideoDurationInSeconds
+                    getVideoDurationInSeconds(filePath)
+                    .then(duration => {
+                        resolve(duration)
+                        fs.unlink(filePath, (e) => {
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        fs.unlink(filePath, (e) => {
+                        })
+                    })
+                })
         })
-        .then((md) => {
-            resolve(md.format.duration);
-            fs.unlink(filePath, (e) => {
-            })
+        .catch((err) => {
+            reject(err);
         })
-        .catch(reject)
     })
 }
 

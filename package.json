@@ -34,6 +34,7 @@
     "express-http-proxy": "^1.6.0",
     "fs": "0.0.1-security",
     "get-audio-duration": "^1.0.0",
+    "get-video-duration": "^3.0.2",
     "handlebars": "^4.1.2",
     "http-proxy-middleware": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
