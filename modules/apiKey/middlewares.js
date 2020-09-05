@@ -14,12 +14,12 @@ const ALLOWED_PERMISSIONS = [
 ];
 
 const middlewares = {
-    authorizeOrganizationAdmin: content => function (req, res, next) {
+    authorizeOrganizationOwner: content => function (req, res, next) {
         const { organization } = req[content];
         const userRoles = req.user.organizationRoles;
         if (userRoles && userRoles.length > 0) {
             const orgRole = userRoles.find(u => u.organization._id.toString() === organization.toString());
-            if (orgRole && (orgRole.organizationOwner || orgRole.permissions.indexOf('admin') !== -1)) {
+            if (orgRole && (orgRole.organizationOwner)) {
                 return next();
             }
         }
@@ -34,7 +34,7 @@ const middlewares = {
                 const userRoles = req.user.organizationRoles;
                 if (userRoles && userRoles.length > 0) {
                     const orgRole = userRoles.find(u => u.organization._id.toString() === organization.toString());
-                    if (orgRole && (orgRole.organizationOwner || orgRole.permissions.indexOf('admin') !== -1)) {
+                    if (orgRole && (orgRole.organizationOwner)) {
                         return next();
                     }
                 }

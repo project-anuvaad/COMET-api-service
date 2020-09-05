@@ -171,6 +171,7 @@ const controller = {
                     key: utils.generateApiKey(),
                     origins: ['videowiki.org'],
                     active: true,
+                    userKey: true,
                 }
                 ApiKey.create(newApiKey)
                 .then((apiKey) => {

@@ -4,8 +4,8 @@ const middlewares = require('./middlewares');
 // of the router to add the module's routes to it
 const mount = function (router) {
     // Define module routes here
-    router.get('/', middlewares.authorizeOrganizationAdmin('query'), controller.get)
-    router.post('/', middlewares.authorizeOrganizationAdmin('body'), middlewares.validateOrigins, middlewares.validatePermissions, controller.create)
+    router.get('/', middlewares.authorizeOrganizationOwner('query'), controller.get)
+    router.post('/', middlewares.authorizeOrganizationOwner('body'), middlewares.validateOrigins, middlewares.validatePermissions, controller.create)
     router.delete('/:apiKeyId', middlewares.authorizeDeletekey, controller.delete)
 
     router.get('/by_key', controller.getApiKeyByKey)
