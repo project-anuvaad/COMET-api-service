@@ -134,7 +134,9 @@ function init({ channel, workers }) {
         })
         .then(() => Video.findByIdAndUpdate(id, { $set: { status: 'done' } }))
         .then(() => articleService.findByIdAndUpdate(video.article, { slides, converted: true }))
-        .then(() => {
+        .then(() => Video.findById(id))
+        .then((videoDoc) => {
+            video = videoDoc.toObject()
             // websocketsService.emitEvent({ _id: video.convertedBy, event: websocketsEvents.VIDEO_DONE, data: video });
             websocketsService.emitEvent({ room: websocketsRooms.getOrganizationRoom(video.organization.toString()), event: websocketsEvents.VIDEO_CONVERT_TO_ARTICLE_FINISH, data: video })
             return Promise.resolve()
