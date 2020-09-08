@@ -31,7 +31,7 @@ const controller = ({ workers }) => {
         })
         .then((articleDoc) => {
           if (!articleDoc) throw new Error("Article doesnt exists");
-          article = articleDoc;
+          article = articleDoc.toObject();
 
           subtitles.subtitles = utils.generateSubtitlesFromSlides(
             article.slides
