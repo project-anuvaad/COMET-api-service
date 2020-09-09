@@ -17,12 +17,13 @@ mongoose
       console.log("Database disconnected! shutting down service");
       process.exit(1);
     });
-    const {
+    let {
       DISABLE_PUBLIC_ORGANIZATIONS,
       SUPERUSER_EMAIL,
       SUPERUSER_PASSWORD,
       SUPERUSER_ORGANIZATION_NAME,
     } = process.env;
+    
     if (
       DISABLE_PUBLIC_ORGANIZATIONS &&
       parseInt(DISABLE_PUBLIC_ORGANIZATIONS) === 1
@@ -50,6 +51,10 @@ mongoose
       // Create user and organization
       const { User, Organization } = require("./modules/shared/models");
       const authService = require("./modules/shared/services/auth");
+      SUPERUSER_EMAIL = SUPERUSER_EMAIL.trim();
+      SUPERUSER_PASSWORD = SUPERUSER_PASSWORD.trim();
+      SUPERUSER_ORGANIZATION_NAME = SUPERUSER_ORGANIZATION_NAME.trim();
+
       let createdOrg;
       Organization.findOneAndUpdate(
         { name: SUPERUSER_ORGANIZATION_NAME },
