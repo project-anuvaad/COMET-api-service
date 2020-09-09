@@ -1,4 +1,5 @@
 const controller = require("./controller");
+const middlewares = require('./middlewares');
 
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -22,7 +23,7 @@ const upload = multer({ storage: storage });
 // of the router to add the module's routes to it
 const mount = function (router) {
   // Define module routes here
-  router.post("/register", upload.any(), controller.registerUser);
+  router.post("/register", middlewares.authorizeRegister, upload.any(), controller.registerUser);
   router.post("/login", controller.loginUser);
   router.post("/resetPassword", controller.resetPassword);
 

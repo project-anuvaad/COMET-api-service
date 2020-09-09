@@ -27,7 +27,7 @@ const mount = function (router) {
     "/",
     upload.any(),
     middlewares.validateImagesExtension("multiple"),
-    middlewares.authorizeUser,
+    middlewares.authorizeCreateOrganization,
     controller.createOrganization
   );
   router.patch(
