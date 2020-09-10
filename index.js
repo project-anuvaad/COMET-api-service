@@ -96,6 +96,7 @@ mongoose
               $addToSet: { organizationRoles: organzationRole },
             })
               .then(() => {
+                console.log("SUPERUSER ADDED TO MAIN ORGANIZATION")
               })
               .catch((err) => {
                 console.log("ERROR ADDING USER TO THE ORGANIZATION", err);
