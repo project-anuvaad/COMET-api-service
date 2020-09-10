@@ -892,7 +892,7 @@ const controller = ({ workers }) => {
     },
 
     getVideos: function (req, res) {
-      const perPage = 10;
+      const perPage = 1;
       let { organization, page, search } = req.query;
 
       const query = {};

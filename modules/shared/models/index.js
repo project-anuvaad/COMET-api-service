@@ -4,6 +4,7 @@ const { SchemaNames } = require('./Schemas/utils/schemaNames');
 const ArticleSchemas = require('./Schemas/Article');
 const CommentSchemas = require('./Schemas/Comment');
 const VideoSchemas = require('./Schemas/Video');
+const ImageSchemas = require('./Schemas/Image');
 const ApiKeySchemas = require('./Schemas/ApiKey')
 const FolderSchemas = require('./Schemas/Folder');
 const NotifiationSchemas = require('./Schemas/Notification');
@@ -20,6 +21,7 @@ const ApiDocsSubscriberSchemas = require('./Schemas/ApiDocsSubscriber')
 const Article = mongoose.model(SchemaNames.article, ArticleSchemas.ArticleSchema);
 const ApiKey = mongoose.model(SchemaNames.apiKey, ApiKeySchemas.ApiKey)
 const Video = mongoose.model(SchemaNames.video, VideoSchemas.VideoSchema);
+const Image = mongoose.model(SchemaNames.image, ImageSchemas.ImageSchema);
 const Comment = mongoose.model(SchemaNames.comment, CommentSchemas.Comment);
 const Folder = mongoose.model(SchemaNames.folder, FolderSchemas.FolderSchema);
 const Notification = mongoose.model(SchemaNames.notification, NotifiationSchemas.NotificationSchema);
@@ -35,6 +37,7 @@ const SocketConnection = mongoose.model(SchemaNames.socketConnection, SocketConn
 
 module.exports = {
     Video,
+    Image,
     Article,
     ApiKey,
     Comment,

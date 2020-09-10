@@ -337,6 +337,9 @@ module.exports = (app) => {
   const videoModule = require('../modules/video')
   app.use('/api/video', videoModule.routes.mount(createRouter(), rabbitmqChannel))
   
+  const imageModule = require('../modules/image')
+  app.use('/api/image', imageModule.routes.mount(createRouter()))
+
   const commentModule = require('../modules/comment');
   app.use('/api/comment', commentModule.routes.mount(createRouter(), rabbitmqChannel))
 
