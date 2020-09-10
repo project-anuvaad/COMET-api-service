@@ -166,7 +166,7 @@ module.exports = {
             const usersData = {
                 firstname,
                 lastname,
-                email,
+                email: email.trim(),
                 password: sha256(password),
                 passwordSet: true,
                 organizationRoles: [orgRole],

@@ -2,6 +2,11 @@ const { authService } = require("../shared/services");
 
 const User = require("../shared/models").User;
 const utils = require("./utils");
+
+const {
+  SUPERUSER_EMAIL,
+} = process.env;
+
 const VW_SUPER_TRANSCRIBERS_EMAILS = process.env.VW_SUPER_TRANSCRIBERS_EMAILS && process.env.VW_SUPER_TRANSCRIBERS_EMAILS.split(',').length > 0 ? process.env.VW_SUPER_TRANSCRIBERS_EMAILS.split(',').map(r => r.trim()).filter(r => r) : [];
 
 VW_SUPER_TRANSCRIBERS_EMAILS.forEach(email => {
@@ -291,6 +296,13 @@ const controller = {
   isValidToken: function (req, res) {
     let currentUserName = req.user.email;
     res.status(200).send({ isValid: !!currentUserName, user: req.user });
+  },
+
+  isSuperUser: function(req, res) {
+    const user = req.user;
+    if (!user || user.email.toLowerCase() !== SUPERUSER_EMAIL.trim().toLowerCase()) return res.json({ isSuperUser: false });
+
+    return res.json({ isSuperUser: true });
   },
 
   updateShowUserGuiding: function (req, res) {

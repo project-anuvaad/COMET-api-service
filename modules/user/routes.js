@@ -9,6 +9,7 @@ const mount = function (router) {
     router.get("/count", controller.getOrgUsersCounts);
     router.get("/getUserDetails", controller.getUserDetails);
     router.get("/isValidToken", controller.isValidToken);
+    router.get('/isSuperUser', controller.isSuperUser)
 
     router.patch('/showUserGuiding', controller.updateShowUserGuiding)
     router.patch('/showCuttingTutorial', controller.updateShowCuttingTutorial)

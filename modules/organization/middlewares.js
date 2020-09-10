@@ -1,4 +1,9 @@
 const {
+  DISABLE_PUBLIC_ORGANIZATIONS,
+  SUPERUSER_EMAIL,
+} = process.env;
+
+const {
     Organization,
 } = require('../shared/models')
 const middlewares = {
@@ -26,6 +31,22 @@ const middlewares = {
         .status(400)
         .send(`Allowed file formats ${allowedExtensions.join(", ")}`);
     return next();
+  },
+  authorizeCreateOrganization: function(req, res, next) {
+    const { user } = req;
+    if (!user || !user._id || !user.organizationRoles) {
+      return res.status(401).send("Unauthorized");
+    }
+    if (
+      DISABLE_PUBLIC_ORGANIZATIONS &&
+      parseInt(DISABLE_PUBLIC_ORGANIZATIONS) === 1 &&
+      SUPERUSER_EMAIL.toLowerCase() !== user.email.toLowerCase()
+      ) {
+        return res.status(403).send('Only project admins can create organizations')
+    } else {
+      return next();
+    }
+
   },
   authorizeUser: function (req, res, next) {
     const { user } = req;
