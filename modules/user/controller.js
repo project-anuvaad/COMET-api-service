@@ -300,7 +300,7 @@ const controller = {
 
   isSuperUser: function(req, res) {
     const user = req.user;
-    if (!user || user.email.toLowerCase() !== SUPERUSER_EMAIL.trim().toLowerCase()) return res.json({ isSuperUser: false });
+    if (!user || !SUPERUSER_EMAIL || !SUPERUSER_EMAIL.trim() || user.email.toLowerCase() !== SUPERUSER_EMAIL.trim().toLowerCase()) return res.json({ isSuperUser: false });
 
     return res.json({ isSuperUser: true });
   },
