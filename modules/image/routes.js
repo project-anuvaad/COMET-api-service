@@ -38,6 +38,11 @@ const mount = function (router) {
     controller.updateImage
   );
 
+  router.put("/:id/groups", controller.updateGroups);
+  router.put("/:id/status", controller.updateImageStatus);
+  router.get('/:id/colors', controller.getColors)
+
+  router.get("/:id", controller.getById);
   return router;
 };
 
