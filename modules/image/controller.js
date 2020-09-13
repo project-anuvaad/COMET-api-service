@@ -23,9 +23,6 @@ const getDisplayWidthAndHeight = (width, height) => {
   return { displayWidth, displayHeight };
 };
 
-console.log('============================================= ')
-console.log(getDisplayWidthAndHeight(700, 1200));
-
 const controller = {
   uploadImage: function (req, res) {
     const { title, langCode, organization } = req.body;
