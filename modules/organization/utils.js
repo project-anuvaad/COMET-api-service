@@ -1,5 +1,5 @@
 function validateEmail(email) {
-  let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,30})+$/;
   return email.match(mailformat)
 }
 

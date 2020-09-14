@@ -20,7 +20,7 @@ const VW_SUPER_TRANSCRIBERS_EMAILS = process.env.VW_SUPER_TRANSCRIBERS_EMAILS &&
 function validateRegData ({ email, firstname, lastname, password, orgName }) {
     return new Promise((resolve, reject) => {
         /*  eslint-disable no-useless-escape */
-        let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,5})+$/;
+        let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,30})+$/;
         let isEmailOk = email.match(mailformat);
 
         if (!isEmailOk) {
