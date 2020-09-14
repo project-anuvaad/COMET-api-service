@@ -74,7 +74,7 @@ const controller = {
         })
         .then(() =>
           storageService.saveFile(
-            "images/thumbnails/",
+            "images/thumbnails",
             thumbnailPath.split("/").pop(),
             fs.createReadStream(thumbnailPath)
           )
