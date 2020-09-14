@@ -9,18 +9,35 @@ const path = require("path");
 const DEFAULT_DISPLAY_WIDTH = 600;
 const DEFAULT_DISPLAY_HEIGHT = 600;
 
-const getDisplayWidthAndHeight = (width, height) => {
-  const aspectRatio = height / width;
+const DEFAULT_THUBMNAIL_WIDTH = 300;
+const DEFAULT_THUBNAIL_HEIGHT = 300;
 
-  let displayHeight, displayWidth;
-  if (width > DEFAULT_DISPLAY_WIDTH) {
-    displayWidth = DEFAULT_DISPLAY_WIDTH;
-    displayHeight = displayWidth * aspectRatio;
-  } else if (height > DEFAULT_DISPLAY_HEIGHT) {
-    displayHeight = DEFAULT_DISPLAY_HEIGHT;
-    displayWidth = displayHeight / aspectRatio;
+const getDisplayWidthAndHeight = (originalWidth, originalHeight) => {
+  const aspectRatio = originalHeight / originalWidth;
+
+  let height, width;
+  if (originalWidth > DEFAULT_DISPLAY_WIDTH) {
+    width = DEFAULT_DISPLAY_WIDTH;
+    height = width * aspectRatio;
+  } else if (originalHeight > DEFAULT_DISPLAY_HEIGHT) {
+    height = DEFAULT_DISPLAY_HEIGHT;
+    width = height / aspectRatio;
   }
-  return { displayWidth, displayHeight };
+  return { width, height };
+};
+
+const getThumbnailWidthAndHeight = (originalWidth, originalHeight) => {
+  const aspectRatio = originalHeight / originalWidth;
+
+  let height, width;
+  if (originalWidth > DEFAULT_THUBMNAIL_WIDTH) {
+    width = DEFAULT_THUBMNAIL_WIDTH;
+    height = width * aspectRatio;
+  } else if (originalHeight > DEFAULT_THUBNAIL_HEIGHT) {
+    height = DEFAULT_THUBNAIL_HEIGHT;
+    width = height / aspectRatio;
+  }
+  return { width, height };
 };
 
 const controller = {
@@ -28,7 +45,10 @@ const controller = {
     const { title, langCode, organization } = req.body;
     let file = req.files && req.files.find((f) => f.fieldname === "image");
 
+    let thumbnailPath;
+    let width, height, displayWidth, displayHeight;
     let uploadedUrl = "";
+    let thumbnailUrl = "";
     if (file) {
       storageService
         .saveFile("images", file.filename, fs.createReadStream(file.path))
@@ -37,11 +57,34 @@ const controller = {
           return Jimp.read(file.path);
         })
         .then((image) => {
-          const width = image.getWidth();
-          const height = image.getHeight();
-          const { displayHeight, displayWidth } = getDisplayWidthAndHeight(width, height);
+          width = image.getWidth();
+          height = image.getHeight();
+          thumbnailPath = path.join(
+            __dirname,
+            `${uuidv4()}.${image.getExtension()}`
+          );
+          let displayData = getDisplayWidthAndHeight(width, height);
+          displayWidth = displayData.width;
+          displayHeight = displayData.height;
+          const thumbData = getThumbnailWidthAndHeight(width, height);
+          console.log("thumb data", thumbData);
+          return image
+            .resize(thumbData.width, thumbData.height)
+            .writeAsync(thumbnailPath);
+        })
+        .then(() =>
+          storageService.saveFile(
+            "images/thumbnails/",
+            thumbnailPath.split("/").pop(),
+            fs.createReadStream(thumbnailPath)
+          )
+        )
+        .then((uploadRes) => {
+          thumbnailUrl = uploadRes.url;
+
           return Image.create({
             url: uploadedUrl,
+            thumbnailUrl,
             title,
             langCode,
             organization,
@@ -55,9 +98,11 @@ const controller = {
         })
         .then((image) => {
           fs.unlink(file.path, () => {});
+          fs.unlink(thumbnailPath, () => {});
           return res.json({ image });
         })
         .catch((err) => {
+          fs.unlink(thumbnailPath, () => {});
           console.log(err);
           return res.status(400).send("Something went wrong");
         });

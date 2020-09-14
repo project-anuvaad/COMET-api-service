@@ -54,6 +54,7 @@ const GroupSchema = new Schema({
 
 const ImageSchema = new Schema({
   url: { type: String },
+  thumbnailUrl: { type: String },
   title: { type: String },
   langCode: { type: String },
   organization: {
