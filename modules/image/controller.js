@@ -10,7 +10,7 @@ const async = require("async");
 const tesseractService = require('../shared/services/tesseract');
 
 const DEFAULT_DISPLAY_WIDTH = 600;
-const DEFAULT_DISPLAY_HEIGHT = 600;
+const DEFAULT_DISPLAY_HEIGHT = 1000;
 
 const DEFAULT_THUBMNAIL_WIDTH = 250;
 const DEFAULT_THUMBNAIL_HEIGHT = 250;
