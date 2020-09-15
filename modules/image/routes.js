@@ -44,6 +44,7 @@ const mount = function (router) {
   router.post("/:id/translate", controller.translateImage);
 
   router.get("/:id/colors", controller.getColors);
+  router.get("/:id/pixelColor", controller.getPixelColor);
   router.get("/:id/text", controller.getText);
 
   router.get("/:id", controller.getById);

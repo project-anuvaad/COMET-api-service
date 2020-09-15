@@ -7,7 +7,7 @@ const Jimp = require("jimp");
 const path = require("path");
 const async = require("async");
 
-const tesseractService = require('../shared/services/tesseract');
+const tesseractService = require("../shared/services/tesseract");
 
 const DEFAULT_DISPLAY_WIDTH = 600;
 const DEFAULT_DISPLAY_HEIGHT = 1000;
@@ -70,7 +70,6 @@ const controller = {
           displayWidth = displayData.width;
           displayHeight = displayData.height;
           const thumbData = getThumbnailWidthAndHeight(width, height);
-          console.log("thumb data", thumbData);
           return image
             .resize(thumbData.width, thumbData.height)
             .writeAsync(thumbnailPath);
@@ -259,6 +258,46 @@ const controller = {
       });
   },
 
+  getPixelColor: function (req, res) {
+    const { id } = req.params;
+    const { left, top, width, height, angle } = req.query;
+    let image;
+    let imageName = "";
+    Image.findById(id)
+      .then((imageDoc) => {
+        image = imageDoc.toObject();
+        return Jimp.read(image.url);
+      })
+      .then((imageJimp) => {
+        imageName = path.join(
+          __dirname,
+          `${uuidv4()}.${imageJimp.getExtension()}`
+        );
+        return imageJimp
+          .resize(image.displayWidth, image.displayHeight)
+          .writeAsync(imageName);
+      })
+      .then(() => Jimp.read(imageName))
+      .then((imageJimp) => {
+        imageJimp.getPixelColour(
+          parseInt(left),
+          parseInt(top),
+          (err, value) => {
+            let color = Jimp.intToRGBA(value);
+            color = [color.r, color.g, color.b, color.a];
+
+            fs.unlink(imageName, () => {});
+            return res.json({ color });
+          }
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        fs.unlink(imageName, () => {});
+        return res.status(400).send("Something went wrong");
+      });
+  },
+
   getText: function (req, res) {
     const { id } = req.params;
     const { left, top, width, height } = req.query;
@@ -292,7 +331,7 @@ const controller = {
       .then((text) => {
         fs.unlink(imageName, () => {});
         // return res.json({ text: (text || '').trim().replace(/\n/g, ' ') });
-        return res.json({ text: (text || '').trim().replace(/(\n)+/g, '\n') })
+        return res.json({ text: (text || "").trim().replace(/(\n)+/g, "\n") });
       })
       .catch((err) => {
         console.log(err);
