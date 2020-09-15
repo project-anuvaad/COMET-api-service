@@ -72,8 +72,15 @@ const ImageSchema = new Schema({
   groups: [GroupSchema],
   groupsColors: [{ type: Schema.Types.Mixed }],
 
-  status: { type: String, default: "uploaded", enum: ["uploaded", "done"] },
+  status: {
+    type: String,
+    default: "uploaded",
+    enum: ["uploaded", "done"],
+    index: true,
+  },
   type: { type: String, enum: TYPE_ENUM, default: "original" },
+  originalImage: { type: Schema.Types.ObjectId, ref: SchemaNames.image },
+
   uploadedBy: { type: Schema.Types.ObjectId, ref: SchemaNames.user },
   created_at: { type: Date, default: Date.now, index: true },
 });

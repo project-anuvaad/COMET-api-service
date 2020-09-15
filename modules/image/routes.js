@@ -31,7 +31,7 @@ const mount = function (router) {
   );
 
   router.get("/", controller.getImages);
-
+  router.get("/translations", controller.getImagesTranslations);
   router.patch(
     "/:id",
     middlewares.authorizeUpdateImage,
@@ -40,7 +40,11 @@ const mount = function (router) {
 
   router.put("/:id/groups", controller.updateGroups);
   router.put("/:id/status", controller.updateImageStatus);
-  router.get('/:id/colors', controller.getColors)
+
+  router.post("/:id/translate", controller.translateImage);
+
+  router.get("/:id/colors", controller.getColors);
+  router.get("/:id/text", controller.getText);
 
   router.get("/:id", controller.getById);
   return router;
