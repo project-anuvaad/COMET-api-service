@@ -13,6 +13,9 @@ const ObjectSchema = new Schema({
   originX: String,
   originY: String,
 
+  scaleX: Number,
+  scaleY: Number,
+
   fill: String,
   fillRule: String,
   stroke: String,
@@ -40,6 +43,8 @@ const GroupSchema = new Schema({
   // strokeLineCap: String,
   // strokeLineJoin: String,
   // strokeMiterLimit: Number,
+  scaleX: Number,
+  scaleY: Number,
   opacity: Number,
   visible: Boolean,
   angle: Number,
