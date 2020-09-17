@@ -157,7 +157,7 @@ const controller = ({ workers }) => {
           }
           exporterWorker.generateVideoThumbnail({
             id: video._id,
-            videoUrl: video.url
+            videoUrl: video.url,
           });
           // Upload subtitle
           if (subtitle) {
@@ -588,14 +588,14 @@ const controller = ({ workers }) => {
       Video.findById(id)
         .then((videoDoc) => {
           video = videoDoc.toObject();
-          if (video.status === 'uploaded') {
+          if (video.status === "uploaded") {
             startVideoAutomatedCutting(id, req.user)
-            .then(() => {
-              console.log('started automated cutting', id)
-            })
-            .catch(err => {
-              console.log('error starting automated cutting', err);
-            })
+              .then(() => {
+                console.log("started automated cutting", id);
+              })
+              .catch((err) => {
+                console.log("error starting automated cutting", err);
+              });
           }
           if (reviewers && reviewers.length > 0) {
             const oldReviewers = video.reviewers.map((r) => r.toString());
@@ -702,14 +702,14 @@ const controller = ({ workers }) => {
       Video.findById(id)
         .then((videoDoc) => {
           video = videoDoc.toObject();
-          if (video.status === 'uploaded') {
+          if (video.status === "uploaded") {
             startVideoAutomatedCutting(id, req.user)
-            .then(() => {
-              console.log('started automated cutting', id)
-            })
-            .catch(err => {
-              console.log('error starting automated cutting', err);
-            })
+              .then(() => {
+                console.log("started automated cutting", id);
+              })
+              .catch((err) => {
+                console.log("error starting automated cutting", err);
+              });
           }
           if (verifiers && verifiers.length > 0) {
             const oldVerifiers = video.verifiers.map((r) => r && r.toString());
@@ -892,7 +892,7 @@ const controller = ({ workers }) => {
     },
 
     getVideos: function (req, res) {
-      const perPage = 1;
+      const perPage = 10;
       let { organization, page, search } = req.query;
 
       const query = {};
@@ -995,7 +995,10 @@ const controller = ({ workers }) => {
         completed = 0,
         cutting = 0;
       // Transcribe videos
-      Video.count({ organization, status: { $in: ["uploaded", "cutting", "automated_cutting"] } })
+      Video.count({
+        organization,
+        status: { $in: ["uploaded", "cutting", "automated_cutting"] },
+      })
         .then((count) => {
           cutting = count;
           // Proofread videos
@@ -1229,42 +1232,45 @@ const controller = ({ workers }) => {
         });
     },
 
-    automaticCutVideo: function(req, res) {
+    automaticCutVideo: function (req, res) {
       const { id } = req.params;
       let video;
       let article;
       let videoUpdate;
       Video.findById(id)
-      .then((v => {
-        video = v.toObject();
-        if (!video || video.status !== 'cutting') {
-          throw new Error('Automatic break is only available in breaking stage')
-        }
-        return articleService.findById(video.article)
-      }))
-      .then(a => {
-        article = a;
-        videoUpdate = {
-          status: 'automated_cutting',
-          cuttingBy: 'self',
-          cuttingRequestBy: req.user._id,
-          cuttingStartTime: Date.now(),
-        }
-        if (video.duration) {
-          // cutting end time is approx 1/2 video duration + 1min
-          videoUpdate.cuttingEndTime = Date.now() + (video.duration / 2 * 1000) + 60 * 1000;
-        }
+        .then((v) => {
+          video = v.toObject();
+          if (!video || video.status !== "cutting") {
+            throw new Error(
+              "Automatic break is only available in breaking stage"
+            );
+          }
+          return articleService.findById(video.article);
+        })
+        .then((a) => {
+          article = a;
+          videoUpdate = {
+            status: "automated_cutting",
+            cuttingBy: "self",
+            cuttingRequestBy: req.user._id,
+            cuttingStartTime: Date.now(),
+          };
+          if (video.duration) {
+            // cutting end time is approx 1/2 video duration + 1min
+            videoUpdate.cuttingEndTime =
+              Date.now() + (video.duration / 2) * 1000 + 60 * 1000;
+          }
 
-        return Video.findByIdAndUpdate(id, { $set: videoUpdate })
-      })
-      .then(() => {
-        spleeterWorker.extractVideoVoice({ id: article._id, url: video.url })
-        return res.json(videoUpdate)
-      })
-      .catch(err => {
-        console.log(err)
-        return res.status(400).send(err.message);
-      })
+          return Video.findByIdAndUpdate(id, { $set: videoUpdate });
+        })
+        .then(() => {
+          spleeterWorker.extractVideoVoice({ id: article._id, url: video.url });
+          return res.json(videoUpdate);
+        })
+        .catch((err) => {
+          console.log(err);
+          return res.status(400).send(err.message);
+        });
     },
 
     skipTranscribe: function (req, res) {
@@ -1275,8 +1281,8 @@ const controller = ({ workers }) => {
         .then((videoDoc) => {
           if (!videoDoc) throw new Error("Invalid video id");
           video = videoDoc.toObject();
-          if (video.status !== 'uploaded') {
-            throw new Error('This video is already being processed');
+          if (video.status !== "uploaded") {
+            throw new Error("This video is already being processed");
           }
           const initialSlide = {
             position: 0,
@@ -1327,7 +1333,8 @@ const controller = ({ workers }) => {
                     .indexOf(video.langCode) !== -1
                 ) {
                   // transcribe end time is approx. 2 times the video duration
-                  videoUpdate.transcribeEndTime = Date.now() + (video.duration * 1000 * 2) 
+                  videoUpdate.transcribeEndTime =
+                    Date.now() + video.duration * 1000 * 2;
                   videoUpdate.AITranscriptionLoading = true;
                 } else {
                   videoUpdate.transcribeEndTime = Date.now();
@@ -1339,7 +1346,8 @@ const controller = ({ workers }) => {
                   Date.now() + TIME_FOR_VIDEOWIKI_TO_CUT;
               } else if (video.duration) {
                 // cutting end time is approx 1/2 video duration + 1min
-                videoUpdate.cuttingEndTime = Date.now() + (video.duration / 2 * 1000) + 60 * 1000;
+                videoUpdate.cuttingEndTime =
+                  Date.now() + (video.duration / 2) * 1000 + 60 * 1000;
                 // // End time will be 1 minute for every 4 minutes of video duration plus an extra 1 mint
                 // videoUpdate.cuttingEndTime = Date.now() + (video.duration / 4 * 1000) + 60 * 1000;
               }
@@ -1347,7 +1355,10 @@ const controller = ({ workers }) => {
             })
             .then(() => {
               res.json({ success: true, article: newArticle });
-              spleeterWorker.extractVideoVoice({ id: article._id, url: video.url })
+              spleeterWorker.extractVideoVoice({
+                id: article._id,
+                url: video.url,
+              });
 
               if (
                 supportedTranscribeLangs
@@ -1449,17 +1460,17 @@ const controller = ({ workers }) => {
         .then(() => Video.findById(id))
         .then((v) => {
           video = v;
-          return articleService.findById(articleId)
+          return articleService.findById(articleId);
         })
         .then((a) => {
           article = a;
           exporterWorker.convertVideoToArticle({
-                id: video._id,
-                videoUrl: video.compressedVideoUrl || video.url,
-                slides: article.slides,
-                speakersProfile: article.speakersProfile,
-                toEnglish: article.toEnglish,
-              });
+            id: video._id,
+            videoUrl: video.compressedVideoUrl || video.url,
+            slides: article.slides,
+            speakersProfile: article.speakersProfile,
+            toEnglish: article.toEnglish,
+          });
           return res.json({ refreshing: true });
         })
         .catch((err) => {
@@ -1559,7 +1570,10 @@ const controller = ({ workers }) => {
                         } else {
                           resolve();
                         }
-                      } else if (clonedArticle && video.AITranscriptionLoading) {
+                      } else if (
+                        clonedArticle &&
+                        video.AITranscriptionLoading
+                      ) {
                         const slides = article.slides.reduce((acc, s) => {
                           if (
                             s.content &&
@@ -1607,15 +1621,17 @@ const controller = ({ workers }) => {
                           resolve();
                         });
                       } else {
-                        Video.findByIdAndUpdate(id, { $set: { AITranscriptionLoading: false }})
-                        .then(() => {
-                          notifyUserAITranscriptionFinished(article._id);
-                          resolve();
+                        Video.findByIdAndUpdate(id, {
+                          $set: { AITranscriptionLoading: false },
                         })
-                        .catch((err) => {
-                          console.log(err);
-                          resolve()
-                        })
+                          .then(() => {
+                            notifyUserAITranscriptionFinished(article._id);
+                            resolve();
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                            resolve();
+                          });
                       }
                     });
                   })
@@ -1764,23 +1780,21 @@ const controller = ({ workers }) => {
             })
             .then(() => {
               const videoUpdate = {
-                status: 'converting',
+                status: "converting",
                 convertedBy: req.user._id,
-              }
+              };
               if (video.duration) {
                 videoUpdate.convertStartTime = Date.now();
                 // Convert end time will be 1/2 the video's duration
-                videoUpdate.convertEndTime = Date.now() + (video.duration * 1000 * 1 / 2);
+                videoUpdate.convertEndTime =
+                  Date.now() + (video.duration * 1000 * 1) / 2;
               }
-              return Video.update(
-                { _id: id },
-                { $set: videoUpdate }
-              );
+              return Video.update({ _id: id }, { $set: videoUpdate });
             })
             .then(() => Video.findById(id))
             .then((v) => {
               video = v;
-              return articleService.findById(article._id)
+              return articleService.findById(article._id);
             })
             .then((a) => {
               article = a;
