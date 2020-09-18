@@ -34,6 +34,7 @@ const ObjectSchema = new Schema({
   // Text
   fontWeight: String,
   fontSize: Number,
+  fontFamily: String,
   text: String,
 });
 
