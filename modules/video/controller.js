@@ -107,6 +107,7 @@ const controller = ({ workers }) => {
         numberOfSpeakers,
         langCode,
         uploadedBy: req.user._id,
+        thumbnailLoading: true,
       };
       if (canVideoAITranscribe(videoData)) {
         videoData.canAITranscribe = true;
@@ -140,14 +141,6 @@ const controller = ({ workers }) => {
           return Video.update(
             { _id: video._id },
             { $set: { Key, url, status: "uploaded" } }
-          );
-        })
-        .then(() => fileUtils.getFileDuration(video.url))
-        .then((videoDuration) => {
-          video.duration = videoDuration;
-          return Video.update(
-            { _id: video._id },
-            { $set: { duration: videoDuration } }
           );
         })
         .then((doc) => {

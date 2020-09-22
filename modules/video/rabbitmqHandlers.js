@@ -73,10 +73,25 @@ function init({ channel, workers }) {
 
     function onGenerateVideoThumbnailFinish(msg) {
         channel.ack(msg);
-        const { id, url } = parseMessageContent(msg);
+        const { id, url, duration } = parseMessageContent(msg);
         console.log('on generate video thumbnail finish', id, url)
-        Video.findByIdAndUpdate(id, { $set: { thumbnailUrl: url }})
+        const update = {
+            thumbnailLoading: false,
+        }
+        if (url) {
+            update.thumbnailUrl = url;
+        }
+        if (duration) {
+            update.duration = duration;
+        }
+
+        Video.findByIdAndUpdate(id, { $set: update })
         .then(() => {
+            return Video.findById(id)
+        })
+        .then(video => {
+            video = video.toObject();
+            websocketsService.emitEvent({ room: websocketsRooms.getOrganizationRoom(video.organization), event: websocketsEvents.VIDEO_THUMBNAIL_GENERATED, data: video });
         })
         .catch(err => {
             console.log(err);

@@ -25,6 +25,8 @@ const VideoSchema = new Schema({
     subtitleType: String,
 
     audioUrl: { type: String },
+
+    thumbnailLoading: { type: Boolean, default: false },
     thumbnailUrl: { type: String },
 
     backgroundMusicUrl: { type: String },

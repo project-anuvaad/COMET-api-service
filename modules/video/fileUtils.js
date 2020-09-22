@@ -39,6 +39,7 @@ function getFileDuration(url) {
                         console.log(err)
                         fs.unlink(filePath, (e) => {
                         })
+                        reject(err);
                     })
                 })
         })
