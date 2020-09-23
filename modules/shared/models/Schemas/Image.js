@@ -86,6 +86,7 @@ const ImageSchema = new Schema({
   },
   type: { type: String, enum: TYPE_ENUM, default: "original" },
   originalImage: { type: Schema.Types.ObjectId, ref: SchemaNames.image },
+  originalText: [{ type: String }],
 
   uploadedBy: { type: Schema.Types.ObjectId, ref: SchemaNames.user },
   created_at: { type: Date, default: Date.now, index: true },

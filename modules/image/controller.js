@@ -441,9 +441,14 @@ const controller = {
           .then((image) => {
             translationImage = image;
             console.log("created translation", translationImage._id);
+            const originalText = [];
             const translateTextFuncArray = [];
             translationImage.groups.forEach((group, i) => {
               translateTextFuncArray.push((cb) => {
+
+                if (group.objects[1]) {
+                  originalText.push(group.objects[1].text || '');
+                }
                 if (!group.objects[1] || !group.objects[1].text) {
                   return cb();
                 }
@@ -460,6 +465,7 @@ const controller = {
               });
             });
             async.parallelLimit(translateTextFuncArray, 2, (err) => {
+              translationImage.originalText = originalText;
               translationImage.save((err) => {
                 if (err) {
                   console.log(err);
