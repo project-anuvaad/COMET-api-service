@@ -16,6 +16,7 @@ module.exports = {
     userService: require('./user'),
     videoService: require('./video'),
     videoTutorialContributionService: require('./videoTutorialContribution'),
+    imageService: require('./image'),
     websocketsService: require('./websockets'),
     storageService: require('./storage'),
     textToSpeechService: require('./textToSpeech'),

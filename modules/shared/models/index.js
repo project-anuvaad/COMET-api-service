@@ -16,7 +16,7 @@ const TranslationExportSchemas = require('./Schemas/TranslationExport');
 
 const NoiseCancellationVideoSchemas = require('./Schemas/NoiseCancellationVideo');
 const SocketConnectionSchemas = require('./Schemas/SocketConnection');
-const ApiDocsSubscriberSchemas = require('./Schemas/ApiDocsSubscriber')
+const ImageTranslationExportSchemas = require('./Schemas/ImageTranslationExport')
 
 const Article = mongoose.model(SchemaNames.article, ArticleSchemas.ArticleSchema);
 const ApiKey = mongoose.model(SchemaNames.apiKey, ApiKeySchemas.ApiKey)
@@ -33,7 +33,7 @@ const User = mongoose.model(SchemaNames.user, UserSchemas.UserSchema);
 const VideoTutorialContribution = mongoose.model(SchemaNames.videoTutorialContribution, VideoTutorialContributionSchemas.VideoTutorialContributionSchema)
 const NoiseCancellationVideo = mongoose.model(SchemaNames.noiseCancellationVideo, NoiseCancellationVideoSchemas.NoiseCancellationVideoSchema);
 const SocketConnection = mongoose.model(SchemaNames.socketConnection, SocketConnectionSchemas.SocketConnectionSchema)
-// const ApiDocsSubscriber = mongoose.model(SchemaNames.apiDocsSubscriber, ApiDocsSubscriberSchemas.ApiDocsSubscriber)
+const ImageTranslationExport = mongoose.model(SchemaNames.imageTranslationExport, ImageTranslationExportSchemas.ImageTranslationExportSchema);
 
 module.exports = {
     Video,
@@ -51,5 +51,5 @@ module.exports = {
     VideoTutorialContribution,
     NoiseCancellationVideo,
     SocketConnection,
-    // ApiDocsSubscriber,
+    ImageTranslationExport,
 };

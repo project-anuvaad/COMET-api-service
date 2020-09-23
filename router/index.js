@@ -364,6 +364,9 @@ module.exports = (app) => {
   const noiseCancellationVideoModule = require('../modules/noiseCancellationVideo')
   app.use('/api/noiseCancellationVideo', noiseCancellationVideoModule.routes.mount(createRouter(), rabbitmqChannel))
   
+  const imageTranslationExportModule = require('../modules/imageTranslationExport')
+  app.use('/api/imageTranslationExport', imageTranslationExportModule.routes.mount(createRouter(), rabbitmqChannel))
+  
   app.get('/*', (req, res) => {
     res.status(404).send('Not found');
   });

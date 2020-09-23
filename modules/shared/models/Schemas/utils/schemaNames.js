@@ -6,6 +6,7 @@ const SchemaNames = {
     user: 'user',
     video: 'video',
     image: 'image',
+    imageTranslationExport: 'imageTranslationExport',
     orgRole: 'orgRole',
     socketConnection: 'socketConnection',
     translationExport: 'translationExport',

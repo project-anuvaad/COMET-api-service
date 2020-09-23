@@ -2,12 +2,16 @@ const fs = require("fs");
 const { storageService, translationService } = require("../shared/services");
 const Image = require("../shared/models").Image;
 const ColorThief = require("colorthief");
+
+const fabric = require("fabric").fabric;
+
 const uuidv4 = require("uuid").v4;
 const Jimp = require("jimp");
 const path = require("path");
 const async = require("async");
 
 const tesseractService = require("../shared/services/tesseract");
+const translatorService = require("../shared/services/translation");
 
 const DEFAULT_DISPLAY_WIDTH = 600;
 const DEFAULT_DISPLAY_HEIGHT = 1000;
@@ -435,8 +439,35 @@ const controller = {
         delete clonedImage._id;
         return Image.create(clonedImage)
           .then((image) => {
-            // const translateTextFuncArray = [];
-            return res.json({ image: image.toObject() });
+            translationImage = image;
+            console.log("created translation", translationImage._id);
+            const translateTextFuncArray = [];
+            translationImage.groups.forEach((group, i) => {
+              translateTextFuncArray.push((cb) => {
+                if (!group.objects[1] || !group.objects[1].text) {
+                  return cb();
+                }
+                translatorService
+                  .translateText(group.objects[1].text, langCode)
+                  .then((translatedText) => {
+                    group.objects[1].text = translatedText;
+                    return cb();
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    return cb();
+                  });
+              });
+            });
+            async.parallelLimit(translateTextFuncArray, 2, (err) => {
+              translationImage.save((err) => {
+                if (err) {
+                  console.log(err);
+                  return res.status(400).send("Something went wrong ");
+                }
+                return res.json({ image: translationImage.toObject() });
+              });
+            });
           })
           .catch((err) => {});
       })
