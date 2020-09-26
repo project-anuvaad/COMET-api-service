@@ -5,15 +5,31 @@ const controller = ({ workers }) => {
   const { exporterWorker } = workers;
   return {
     get: function (req, res) {
+      const perPage = 5;
+
       const { image } = req.query;
+      let { page } = req.query;
+      if (page) {
+        page = parseInt(page);
+      } else {
+        page = 1;
+      }
+
+      const skip = page === 1 ? 0 : page * perPage - perPage;
+      let imageTranslationExports;
       ImageTranslationExport.find({ image })
+        .skip(skip)
+        .limit(perPage)
         .sort({ created_at: -1 })
         .populate("exportRequestBy", "_id firstname lastname email")
-        .then((imageTranslationExports) => {
+        .then((ts) => {
+          imageTranslationExports = ts.map((i) => i.toObject());
+          return ImageTranslationExport.count({ image });
+        })
+        .then((count) => {
           return res.json({
-            imageTranslationExports: imageTranslationExports.map((i) =>
-              i.toObject()
-            ),
+            imageTranslationExports,
+            pagesCount: Math.ceil(count / perPage),
           });
         })
         .catch((err) => {
@@ -54,7 +70,7 @@ const controller = ({ workers }) => {
           if (latestExport) {
             // If it was exported, then it's a subversion update
             // Else it's a version update
-            console.log('exported', imageDoc.exported)
+            console.log("exported", imageDoc.exported);
             if (imageDoc.exported) {
               version = latestExport.version || 1;
               subVersion = (latestExport.subVersion || 0) + 1;
