@@ -88,6 +88,7 @@ const ImageSchema = new Schema({
   originalImage: { type: Schema.Types.ObjectId, ref: SchemaNames.image },
   originalText: [{ type: String }],
 
+  exported: { type: Boolean, default: false },
   uploadedBy: { type: Schema.Types.ObjectId, ref: SchemaNames.user },
   created_at: { type: Date, default: Date.now, index: true },
 });

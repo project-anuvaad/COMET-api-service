@@ -202,7 +202,11 @@ const controller = {
   updateGroups: function (req, res) {
     const { id } = req.params;
     const { groups } = req.body;
-    Image.findByIdAndUpdate(id, { $set: { groups } }, { new: true })
+    Image.findByIdAndUpdate(
+      id,
+      { $set: { groups, exported: false } },
+      { new: true }
+    )
       .then((image) => res.json({ image: image.toObject() }))
       .catch((err) => {
         console.log(err);
@@ -445,9 +449,8 @@ const controller = {
             const translateTextFuncArray = [];
             translationImage.groups.forEach((group, i) => {
               translateTextFuncArray.push((cb) => {
-
                 if (group.objects[1]) {
-                  originalText.push(group.objects[1].text || '');
+                  originalText.push(group.objects[1].text || "");
                 }
                 if (!group.objects[1] || !group.objects[1].text) {
                   return cb();

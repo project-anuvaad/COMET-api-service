@@ -8,7 +8,7 @@ const controller = ({ workers }) => {
       const { image } = req.query;
       ImageTranslationExport.find({ image })
         .sort({ created_at: -1 })
-        .populate('exportRequestBy', '_id firstname lastname email')
+        .populate("exportRequestBy", "_id firstname lastname email")
         .then((imageTranslationExports) => {
           return res.json({
             imageTranslationExports: imageTranslationExports.map((i) =>
@@ -25,9 +25,8 @@ const controller = ({ workers }) => {
       const { image } = req.body;
 
       let imageDoc;
-      Image 
-        .findById(image)
-        .populate('originalImage')
+      Image.findById(image)
+        .populate("originalImage")
         .then((i) => {
           imageDoc = i.toObject();
           return ImageTranslationExport.find({
@@ -39,6 +38,31 @@ const controller = ({ workers }) => {
           if (its && its.length > 0) {
             throw new Error("Image is already processing");
           }
+          return ImageTranslationExport.find({
+            image,
+          })
+            .sort({ created_at: -1 })
+            .limit(1);
+        })
+        .then((latestExports) => {
+          let latestExport;
+          if (latestExports.length > 0) {
+            latestExport = latestExports[0];
+          }
+          let version = 1;
+          let subVersion = 0;
+          if (latestExport) {
+            // If it was exported, then it's a subversion update
+            // Else it's a version update
+            console.log('exported', imageDoc.exported)
+            if (imageDoc.exported) {
+              version = latestExport.version || 1;
+              subVersion = (latestExport.subVersion || 0) + 1;
+            } else {
+              version = (latestExport.version || 0) + 1;
+              subVersion = 0;
+            }
+          }
 
           return ImageTranslationExport.create({
             image,
@@ -46,6 +70,8 @@ const controller = ({ workers }) => {
             exportRequestBy: req.user._id,
             exportRequestStatus: "approved",
             status: "processing",
+            version,
+            subVersion,
           });
         })
         .then((imageTranslationExport) => {

@@ -1,5 +1,5 @@
 const websocketsEvents = require("../shared/services/websockets/websockets/events");
-const { ImageTranslationExport } = require("../shared/models");
+const { ImageTranslationExport, Image } = require("../shared/models");
 
 const fs = require("fs");
 
@@ -34,9 +34,18 @@ function init({ channel }) {
       update.imageUrl = url;
     }
 
-    ImageTranslationExport.findByIdAndUpdate(id, { $set: update })
-      .then(() => {
+    ImageTranslationExport.findByIdAndUpdate(
+      id,
+      { $set: update },
+      { new: true }
+    )
+      .then((translationExport) => {
         console.log("updated image translation export", id);
+        return Image.findByIdAndUpdate(translationExport.image, {
+          $set: { exported: true },
+        });
+      })
+      .then(() => {
         channel.ack(msg);
       })
       .catch((err) => {

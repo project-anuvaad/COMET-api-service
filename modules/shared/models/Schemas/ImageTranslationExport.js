@@ -7,6 +7,8 @@ const STATUS_ENUM = ['queued', 'processing', 'done', 'failed'];
 
 const ImageTranslationExportSchema = new Schema({
     organization: { type: Schema.Types.ObjectId, ref: SchemaNames.organization, index: true },
+    version: Number,
+    subversion: Number,
     image: { type: Schema.Types.ObjectId, ref: SchemaNames.image, index: true },
 
     exportRequestStatus: { type: String, enum: EXPORT_REQUEST_STATUS, default: 'pending' },
