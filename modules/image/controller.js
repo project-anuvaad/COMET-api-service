@@ -22,7 +22,8 @@ const DEFAULT_THUMBNAIL_HEIGHT = 250;
 const getDisplayWidthAndHeight = (originalWidth, originalHeight) => {
   const aspectRatio = originalHeight / originalWidth;
 
-  let height, width;
+  let height = originalHeight;
+  let width = originalWidth;
   if (originalHeight > DEFAULT_DISPLAY_HEIGHT) {
     height = DEFAULT_DISPLAY_HEIGHT;
     width = height / aspectRatio;
