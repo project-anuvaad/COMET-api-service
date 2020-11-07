@@ -37,7 +37,8 @@ const getDisplayWidthAndHeight = (originalWidth, originalHeight) => {
 const getThumbnailWidthAndHeight = (originalWidth, originalHeight) => {
   const aspectRatio = originalHeight / originalWidth;
 
-  let height, width;
+  let height = originalHeight;
+  let width = originalWidth;
   if (originalHeight > DEFAULT_THUMBNAIL_HEIGHT) {
     height = DEFAULT_THUMBNAIL_HEIGHT;
     width = height / aspectRatio;
@@ -67,6 +68,7 @@ const controller = {
         .then((image) => {
           width = image.getWidth();
           height = image.getHeight();
+          console.log({ width, height });
           thumbnailPath = path.join(
             __dirname,
             `${uuidv4()}.${image.getExtension()}`
