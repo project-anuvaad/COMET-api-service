@@ -24,7 +24,7 @@ services:
     environment:
       - REDIS_HOST=redis-server
       - REDIS_PORT=6379
-      - DB_CONNECTION_URL=mongodb://mongo_server/tailored_videowiki
+      - DB_CONNECTION_URL=mongodb://mongo_server/tailored_comet
       - ME_CONFIG_MONGODB_ADMINUSERNAME=root
       - ME_CONFIG_MONGODB_ADMINPASSWORD=example
       - RABBITMQ_SERVER=amqp://guest:guest@rabbitmq_server
