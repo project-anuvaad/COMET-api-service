@@ -38,7 +38,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject: `Invitation to join Videowiki with ${organization.name}`,
                     html: htmlToSend
@@ -72,7 +72,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -104,7 +104,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -140,7 +140,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -177,7 +177,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -248,7 +248,7 @@ module.exports = () => {
                     if (err) return reject(err);
                     // setup e-mail data, even with unicode symbols
                     const mailOptions = {
-                        from: 'Videowiki <help@videowiki.org>',
+                        from: 'Videowiki <help@comet.anuvaad.org>',
                         to: to.email,
                         subject,
                         html: htmlToSend
@@ -283,7 +283,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -315,7 +315,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -345,7 +345,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -374,7 +374,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -404,7 +404,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -433,7 +433,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -463,7 +463,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -481,7 +481,7 @@ module.exports = () => {
     const sendVideoContributionUploadedMessage = ({ to, content }) => {
         return new Promise((resolve, reject) => {
             const mailOptions = {
-                from: 'Videowiki <help@videowiki.org>',
+                from: 'Videowiki <help@comet.anuvaad.org>',
                 to,
                 subject: 'New video tutorial contribution uploaded',
                 text: content,
@@ -511,7 +511,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -542,7 +542,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -573,7 +573,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -604,7 +604,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -634,7 +634,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@videowiki.org>',
+                    from: 'Videowiki <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
