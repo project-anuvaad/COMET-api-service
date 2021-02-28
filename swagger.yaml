@@ -12,7 +12,7 @@ info:
     url: 'https://github.com/angular/angular.js/blob/master/LICENSE'
 servers:
   - description: Production Api server
-    url: https://api.videowiki.org/api
+    url: https://api.comet.anuvaad.org/api
   
 paths:
   /auth/register:
