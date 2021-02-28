@@ -169,7 +169,7 @@ const controller = {
                     organization,
                     user: user._id,
                     key: utils.generateApiKey(),
-                    origins: ['videowiki.org'],
+                    origins: ['comet.anuvaad.org'],
                     active: true,
                     userKey: true,
                 }
