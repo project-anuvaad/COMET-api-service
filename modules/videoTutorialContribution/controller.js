@@ -54,8 +54,7 @@ const controller = {
             return VideoTutorialContribution.update({ _id: video._id }, { $set: { Key, url } })
         })
         .then(() => {
-            // Notify Pratik and Hassan to confirm and publish the video
-            ['pratik.shetty@tlrfindia.com', 'hassan.amin@videowiki.org'].forEach(to => {
+            ['smy.altamash@gmail.com'].forEach(to => {
                 emailService.sendVideoContributionUploadedMessage({ to, content: `A new video contribution was uploaded with title ${video.title} on the url ${video.url}`})
                 .then(() => {
                     console.log('sent message to ', to);
