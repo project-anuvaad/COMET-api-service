@@ -1,5 +1,5 @@
 const Article = require('../shared/models').Article;
-const VIDEOWIKI_WHATSAPP_NUMBER = process.env.VIDEOWIKI_WHATSAPP_NUMBER;
+const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER;
 const { userService } = require('../shared/services');
 const async = require('async');
 
@@ -490,32 +490,32 @@ function getArticleWithRelatedUsers(articleId) {
 } 
 
 function generateWhatsappTranscribeLink(videoId) {
-  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+  if (!WHATSAPP_NUMBER) {
       return '';
   }
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
 }
 
 function generateWhatsappProofreadLink(videoId) {
-  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+  if (!WHATSAPP_NUMBER) {
       return '';
   }
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
 }
 
 
 function generateWhatsappTranslateLink(videoId, langTo) {
-  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+  if (!WHATSAPP_NUMBER) {
       return '';
   }
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
 }
 
 function getWhatsappNotifyOnProofreadingReady(videoId) {
-  if (!VIDEOWIKI_WHATSAPP_NUMBER) {
+  if (!WHATSAPP_NUMBER) {
       return '';
   }
-  return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
 }
 module.exports = {
     validateSubslideDelete,

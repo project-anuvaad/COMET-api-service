@@ -56,7 +56,7 @@ const VideoSchema = new Schema({
     status: { type: String, enum: CONVERT_STATUS_ENUM, default: 'uploading' },
 
     cuttingRequestBy: { type: Schema.Types.ObjectId, ref: SchemaNames.user, },
-    cuttingBy: { type: String, enum: ['self', 'videowiki'], default: 'self' },
+    cuttingBy: { type: String, enum: ['self', 'comet'], default: 'self' },
     cuttingStartTime: { type: Number },
     cuttingEndTime: { type: Number },
 

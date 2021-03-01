@@ -38,9 +38,9 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
-                    subject: `Invitation to join Videowiki with ${organization.name}`,
+                    subject: `Invitation to join COMET with ${organization.name}`,
                     html: htmlToSend
                 };
 
@@ -61,7 +61,7 @@ module.exports = () => {
             const targetURL = `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/lr?t=${inviteToken}&o=${organizationId}&redirectTo=${encodeURIComponent(`/translation/article/${articleId}`)}`;
 
             const renderData = {
-                title: 'VideoWiki Invitation To Lead Translation',
+                title: 'COMET Invitation To Lead Translation',
                 content: `"${from.email}" from "${organizationName}" assigned you to lead the translation of ${videoTitle} from ${fromLang} to ${toLang}.`,
                 note: `This invitation was intended for "${to.email}". If you were not expecting this invitation, you can ignore this email.`,
                 targetURL,
@@ -72,7 +72,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -93,7 +93,7 @@ module.exports = () => {
             const subject = `${organizationName}: Invitation to lead translation of the video (${videoTitle})`
             const targetURL = `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/lr?t=${inviteToken}&o=${organizationId}&redirectTo=${encodeURIComponent(`/organization/videos/translations/${videoId}`)}`;
             const renderData = {
-                title: 'VideoWiki Invitation To Lead Video Translation',
+                title: 'COMET Invitation To Lead Video Translation',
                 content: `"${from.email}" from "${organizationName}" assigned you to lead the translations of ${videoTitle}.`,
                 note: `This invitation was intended for "${to.email}". If you were not expecting this invitation, you can ignore this email.`,
                 targetURL,
@@ -104,7 +104,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -128,7 +128,7 @@ module.exports = () => {
 
             const declineURL = `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/invitations/translateText?t=${inviteToken}&o=${organizationId}&aid=${articleId}&s=declined&email=${to.email}`
             const renderData = {
-                title: 'VideoWiki Invitation To Translate',
+                title: 'COMET Invitation To Translate',
                 content: `"${from.email}" from "${organizationName}" invited you to translate the video's text "${videoTitle}" from ${fromLang} to ${toLang}.`,
                 note: `This invitation was intended for "${to.email}". If you were not expecting this invitation, you can ignore this email.`,
                 acceptURL,
@@ -140,7 +140,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -164,7 +164,7 @@ module.exports = () => {
 
             const declineURL = `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/invitations/translate?t=${inviteToken}&o=${organizationId}&aid=${articleId}&s=declined&email=${to.email}`
             const renderData = {
-                title: 'VideoWiki Invitation To Translate',
+                title: 'COMET Invitation To Translate',
                 content: `"${from.email}" from "${organizationName}" invited you to translate the video "${videoTitle}" from ${fromLang} to ${toLang}.`,
                 note: `This invitation was intended for "${to.email}". If you were not expecting this invitation, you can ignore this email.`,
                 acceptURL,
@@ -177,7 +177,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -248,7 +248,7 @@ module.exports = () => {
                     if (err) return reject(err);
                     // setup e-mail data, even with unicode symbols
                     const mailOptions = {
-                        from: 'Videowiki <help@comet.anuvaad.org>',
+                        from: 'COMET <help@comet.anuvaad.org>',
                         to: to.email,
                         subject,
                         html: htmlToSend
@@ -272,7 +272,7 @@ module.exports = () => {
             const targetURL = `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/lr?t=${inviteToken}&o=${organizationId}&redirectTo=${encodeURIComponent(`/translation/article/${articleId}`)}`;
 
             const renderData = {
-                title: 'VideoWiki Invitation To Verify',
+                title: 'COMET Invitation To Verify',
                 content: `"${from.email}" from "${organizationName}" assigned you to verify the translation of ${videoTitle} from ${fromLang} to ${toLang}.`,
                 note: `This invitation was intended for "${to.email}". If you were not expecting this invitation, you can ignore this email.`,
                 targetURL,
@@ -283,7 +283,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -303,7 +303,7 @@ module.exports = () => {
             const subject = `${organizationName}: Invitation to proofread a video (${videoTitle})`
 
             const renderData = {
-                title: 'VideoWiki Invitation To Transcribe Email',
+                title: 'COMET Invitation To Transcribe Email',
                 content: `"${from.email}" from "${organizationName}" invited you to Transcribe the video "${videoTitle}"`,
                 buttonTitle: `Go to video`,
                 whatsappUrl,
@@ -315,7 +315,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -345,7 +345,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -363,7 +363,7 @@ module.exports = () => {
 
     const resetUserPassord = ({ to, resetCode }) => {
         return new Promise((resolve, reject) => {
-            const subject = `Videowiki: Reset Password`
+            const subject = `COMET: Reset Password`
 
             const renderData = {
                 resetPasswordUrl: `${FRONTEND_HOST_PROTOCOL}://${FRONTEND_HOST_NAME}/rp?rc=${resetCode}&email=${to.email}`,
@@ -374,7 +374,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -394,7 +394,7 @@ module.exports = () => {
             const subject = `${organizationName}: the video (${videoTitle}) review was marked as done`
 
             const renderData = {
-                title: 'VideoWiki: Review verify',
+                title: 'COMET: Review verify',
                 content: `"${from.email}" from "${organizationName}" marked the video "${videoTitle}" as done and ready to be verified`,
                 buttonTitle: `Go to video`,
                 targetURL: `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/lr?t=${inviteToken}&o=${organizationId}&redirectTo=${encodeURIComponent(`/convert?video=${videoId}`)}`,
@@ -404,7 +404,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -423,7 +423,7 @@ module.exports = () => {
             const subject = `${organizationName}: the video (${videoTitle}) is now ready for proofreading`
 
             const renderData = {
-                title: 'VideoWiki: Video ready for proofreading',
+                title: 'COMET: Video ready for proofreading',
                 content: `${organizationName}: the video (${videoTitle}) is now ready for proofreading`,
                 buttonTitle: `Go to video`,
                 targetURL: `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/lr?t=${inviteToken}&o=${organizationId}&redirectTo=${encodeURIComponent(`/convert?video=${videoId}`)}`,
@@ -433,7 +433,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -453,7 +453,7 @@ module.exports = () => {
             const subject = `${organizationName}: the video (${videoTitle}) AI Transcription is finished`
 
             const renderData = {
-                title: 'VideoWiki: Video AI Transcription finished',
+                title: 'COMET: Video AI Transcription finished',
                 content: `${organizationName}: the video (${videoTitle}) AI Transcription is finished`,
                 buttonTitle: `Go to video`,
                 targetURL: `${FRONTEND_HOST_PROTOCOL}://${organizationName.replace(/\s/g, '-')}.${FRONTEND_HOST_NAME}/lr?t=${inviteToken}&o=${organizationId}&redirectTo=${encodeURIComponent(`/convert?video=${videoId}`)}`,
@@ -463,7 +463,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -481,7 +481,7 @@ module.exports = () => {
     const sendVideoContributionUploadedMessage = ({ to, content }) => {
         return new Promise((resolve, reject) => {
             const mailOptions = {
-                from: 'Videowiki <help@comet.anuvaad.org>',
+                from: 'COMET <help@comet.anuvaad.org>',
                 to,
                 subject: 'New video tutorial contribution uploaded',
                 text: content,
@@ -500,7 +500,7 @@ module.exports = () => {
             const subject = `${organizationName}: the video (${videoTitle}) sign language translation is completed`
 
             const renderData = {
-                title: 'VideoWiki: Sign language Translation completed',
+                title: 'COMET: Sign language Translation completed',
                 content: `${organizationName}: the video (${videoTitle}) sign language translation is completed`,
                 extraContent: 'Start Reviewing the translation to approve it by clicking on the button below',
                 buttonTitle: `Go to translation`,
@@ -511,7 +511,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -531,7 +531,7 @@ module.exports = () => {
             const subject = `${organizationName}: the video (${videoTitle}) text translation is completed`
 
             const renderData = {
-                title: 'VideoWiki: Text Translation completed',
+                title: 'COMET: Text Translation completed',
                 content: `${organizationName}: the video (${videoTitle}) text translation is completed`,
                 extraContent: 'Start Reviewing the translation to approve it by clicking on the button below',
                 buttonTitle: `Go to translation`,
@@ -542,7 +542,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -562,7 +562,7 @@ module.exports = () => {
             const subject = `${organizationName}: the video (${videoTitle}) text translation is completed`
 
             const renderData = {
-                title: 'VideoWiki: Text Translation completed',
+                title: 'COMET: Text Translation completed',
                 content: `${organizationName}: the video (${videoTitle}) text translation is completed`,
                 extraContent: 'Start adding voice over to it by clicking on the button below',
                 buttonTitle: `Go to translation`,
@@ -573,7 +573,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -593,7 +593,7 @@ module.exports = () => {
             const subject = `${organizationName}: the video (${videoTitle}) Voiceover translation is completed`
 
             const renderData = {
-                title: 'VideoWiki: Voiceover Translation completed',
+                title: 'COMET: Voiceover Translation completed',
                 content: `${organizationName}: the video (${videoTitle}) Voiceover translation is completed`,
                 extraContent: 'Start Reviewing the translation to approve it by clicking on the button below',
                 buttonTitle: `Go to translation`,
@@ -604,7 +604,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend
@@ -624,7 +624,7 @@ module.exports = () => {
             const subject = `${organizationName}: Bulk export is completed and ready for download`
 
             const renderData = {
-                title: 'VideoWiki: Bulk export is completed and ready for download',
+                title: 'COMET: Bulk export is completed and ready for download',
                 content: `${organizationName}: Bulk export is completed and ready for download`,
                 buttonTitle: `Download Videos Zip file`,
                 targetURL: zipUrl,
@@ -634,7 +634,7 @@ module.exports = () => {
                 if (err) return reject(err);
                 // setup e-mail data, even with unicode symbols
                 const mailOptions = {
-                    from: 'Videowiki <help@comet.anuvaad.org>',
+                    from: 'COMET <help@comet.anuvaad.org>',
                     to: to.email,
                     subject,
                     html: htmlToSend

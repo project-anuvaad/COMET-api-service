@@ -1,6 +1,6 @@
 const TRANSLATION_AUDIO_DIRECTORY = 'translation/audios';
 const BACKGROUND_MUSIC_DIRECTORY = 'audios/backgroundMusic'
-const TIME_FOR_VIDEOWIKI_TO_CUT = 2 * 60 * 60 * 1000;
+const TIME_FOR_COMET_TO_CUT = 2 * 60 * 60 * 1000;
 const DEFAULT_SINGLESLIDE_ENDTIME = 15 * 1000;
 
 const supportedTranscribeLangs = [
@@ -228,6 +228,6 @@ module.exports = {
     supportedTranscribeLangs,
     TRANSLATION_AUDIO_DIRECTORY,
     BACKGROUND_MUSIC_DIRECTORY,
-    TIME_FOR_VIDEOWIKI_TO_CUT,
+    TIME_FOR_COMET_TO_CUT,
     DEFAULT_SINGLESLIDE_ENDTIME,
 }
