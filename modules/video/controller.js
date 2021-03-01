@@ -12,7 +12,7 @@ const {
 } = require("../shared/services");
 
 const {
-  TIME_FOR_VIDEOWIKI_TO_CUT,
+  TIME_FOR_COMET_TO_CUT,
   DEFAULT_SINGLESLIDE_ENDTIME,
   supportedTranscribeLangs,
   BACKGROUND_MUSIC_DIRECTORY,
@@ -1334,9 +1334,9 @@ const controller = ({ workers }) => {
                 }
               }
 
-              if (cuttingBy === "videowiki") {
+              if (cuttingBy === "comet") {
                 videoUpdate.cuttingEndTime =
-                  Date.now() + TIME_FOR_VIDEOWIKI_TO_CUT;
+                  Date.now() + TIME_FOR_COMET_TO_CUT;
               } else if (video.duration) {
                 // cutting end time is approx 1/2 video duration + 1min
                 videoUpdate.cuttingEndTime =
@@ -1364,7 +1364,7 @@ const controller = ({ workers }) => {
               }
 
               if (
-                cuttingBy === "videowiki" &&
+                cuttingBy === "comet" &&
                 VW_SUPER_TRANSCRIBERS_EMAILS.length > 0
               ) {
                 VW_SUPER_TRANSCRIBERS_EMAILS.forEach((email) => {

@@ -1,4 +1,4 @@
-# Tailored Videowiki 
+# Tailored COMET 
 ## Project strcture:
 - ### modules/shared/dbHandlers
 	- Files in this directory should be the only place that interacts directly with the database *( think if we want to change the database altogether, we should only change the implementations in this directory )*.

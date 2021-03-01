@@ -2,7 +2,7 @@ const async = require("async");
 const Video = require("../shared/models").Video;
 const { exec } = require("child_process");
 const path = require("path");
-const VIDEOWIKI_WHATSAPP_NUMBER = process.env.VIDEOWIKI_WHATSAPP_NUMBER;
+const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER;
 const fs = require("fs");
 
 const {
@@ -204,10 +204,10 @@ module.exports = ({ workers }) => {
               cuttingBy: cuttingBy || "self",
               cuttingRequestBy: user._id,
             };
-            if (cuttingBy === "videowiki") {
+            if (cuttingBy === "comet") {
               videoUpdate.cuttingStartTime = Date.now();
               videoUpdate.cuttingEndTime =
-                Date.now() + TIME_FOR_VIDEOWIKI_TO_CUT;
+                Date.now() + TIME_FOR_COMET_TO_CUT;
             }
             return Video.update({ _id: video._id }, { $set: videoUpdate });
           });
@@ -621,19 +621,19 @@ module.exports = ({ workers }) => {
   }
 
   function generateWhatsappTranscribeLink(videoId) {
-    return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi breakvideo-${videoId}`}`;
   }
 
   function generateWhatsappProofreadLink(videoId) {
-    return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi transcribevideo-${videoId}`}`;
   }
 
   function generateWhatsappTranslateLink(videoId, langTo) {
-    return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi translatevideo-${videoId}-${langTo}`}`;
   }
 
   function getWhatsappNotifyOnProofreadingReady(videoId) {
-    return `https://wa.me/${VIDEOWIKI_WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${`hi notifyonproofreadingready-${videoId}`}`;
   }
   return {
     notifyUserVideoProofreadingReady,
