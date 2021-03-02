@@ -1,1 +1,1 @@
-module.exports = require('@videowiki/vendors/storage')
+module.exports = require('@comet-anuvaad/vendors/storage')

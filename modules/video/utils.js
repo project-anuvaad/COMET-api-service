@@ -26,7 +26,6 @@ module.exports = ({ workers }) => {
 
   function downloadFile(url, targetPath) {
     return new Promise((resolve, reject) => {
-      // https://tailoredvideowiki.s3.eu-west-1.amazonaws.com/videos/1.mp4
       exec(`wget ${url} -O ${targetPath}`, (err) => {
         if (err) {
           return reject(err);

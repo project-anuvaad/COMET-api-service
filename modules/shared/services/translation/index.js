@@ -1,1 +1,1 @@
-module.exports = require('@videowiki/vendors/translation')
+module.exports = require('@comet-anuvaad/vendors/translation')
