@@ -195,8 +195,8 @@ module.exports = () => {
     // USAGE SAMPLE
 
     // bulkInviteUserToTranslationAction({
-    //     from: { email: 'hassan94924@gmail.com'},
-    //     to: { email: 'hassan94924@gmail.com'},
+    //     from: { email: ''},
+    //     to: { email: ''},
     //     organizationName: 'Test Org',
     //     organizationId: '1231312',
     //     invitations: [
