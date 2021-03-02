@@ -29,4 +29,4 @@ class TextToSpeechService {
 
 const textToSpeechService = new TextToSpeechService();
 
-module.exports = require('@videowiki/vendors/textToSpeech') 
+module.exports = require('@comet-anuvaad/vendors/textToSpeech') 
